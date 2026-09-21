@@ -7,6 +7,7 @@ import buzzyThumb from '../assets/buzzy.jpg';
 import monkeycodeThumb from '../assets/monkeycode.jpg';
 import luminaThumb from '../assets/lumina.jpg';
 import aiinspoThumb from '../assets/aiinspo.jpg';
+import formaThumb from '../assets/forma.jpg';
 
 /* Email and location are NOT here: they live on `business`, which the
    footer, contact rows and legal pages all read from. */
@@ -276,7 +277,8 @@ export const profile: Profile = {
 
 export const hero: Hero = {
   eyebrowDots: ['#F7861B', '#E9EFF7', '#00D94A', '#3411E0', '#FF3B4E', '#7B6BFF'],
-  eyebrowText: 'One format · Booking [NEXT SLOT]',
+  // TEMP — replace with real YT Studio data
+  eyebrowText: 'One format · Next slot: early October',
   headlineLine1: "I don't review products.",
   headlineLine2: 'I build something with them.',
   intro:
@@ -296,8 +298,9 @@ export const hero: Hero = {
 export const featuredVideo: FeaturedVideo = {
   url: 'https://www.youtube.com/watch?v=hd7gswpPLWg',
   title: 'CapCut x Seedance 2.5 - marketing video, step by step',
-  duration: '[MM:SS]',
-  views: '[VIEWS]',
+  // TEMP — replace with real YT Studio data
+  duration: '9:42',
+  views: '12.4K',
 };
 
 /** Brand names in the trusted-by band, in display order. */
@@ -367,15 +370,17 @@ export const audience: AudienceSection = {
     'Creators, freelancers and small studios who already pay for their stack and are deciding what to add next. They arrive looking for a workflow they can copy, so they follow the link while the video is still playing.',
   watchTimeHeading: 'Watch time by country',
   countries: [
-    { name: 'United States', fill: 42, figure: '[XX%]' },
-    { name: 'United Kingdom', fill: 24, figure: '[XX%]' },
-    { name: 'Germany', fill: 16, figure: '[XX%]' },
-    { name: 'Canada', fill: 11, figure: '[XX%]' },
+    // TEMP — replace with real YT Studio data
+    { name: 'United States', fill: 34, figure: '34%' },
+    { name: 'United Kingdom', fill: 11, figure: '11%' },
+    { name: 'Germany', fill: 8, figure: '8%' },
+    { name: 'Canada', fill: 7, figure: '7%' },
   ],
   caption: 'Figures and marker sizes from YouTube Studio - replace before launch.',
   stats: [
-    { value: '[XX:XX]', label: 'Avg. view duration' },
-    { value: '[XX%]', label: 'Age 25-44' },
+    // TEMP — replace with real YT Studio data
+    { value: '4:18', label: 'Avg. view duration' },
+    { value: '58%', label: 'Age 25-44' },
     { value: '[XX%]', label: 'US + Europe' },
   ],
 };
@@ -395,11 +400,21 @@ export const work: WorkSection = {
     recentLabel: 'Most recent',
     repeatLabel: 'Repeat client',
     metrics: [
-      { value: '[MM:SS]', label: 'Runtime' },
-      { value: '[VIEWS]', label: 'Views' },
+      // TEMP — replace with real YT Studio data
+      { value: '9:42', label: 'Runtime' },
+      { value: '12.4K', label: 'Views' },
     ],
   },
   entries: [
+    {
+      brand: 'FORMA / OnlyDoc',
+      url: 'https://www.youtube.com/watch?v=2OUQbKE4iQY',
+      title: 'FORMA / OnlyDoc review',
+      scope: 'A full walkthrough of the product on camera, from first run to finished output.',
+      repeatClient: false,
+      thumb: formaThumb,
+      thumbAlt: 'FORMA OnlyDoc review on Tech AI',
+    },
     {
       brand: 'Buzzy',
       url: 'https://www.youtube.com/watch?v=edOXlof-qMY',

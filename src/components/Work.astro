@@ -274,12 +274,14 @@ const { feature } = work;
     color: var(--text-muted);
   }
 
-  /* Small grid: 1px gaps over a hairline ground, so the gaps read as rules. */
+  /* Small grid: 1px gaps over a hairline ground, so the gaps read as rules.
+     The 1px top margin used to butt the row against the feature card, whose
+     14px radius made the two read as overlapping; 24px separates them. */
   .grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1px;
-    margin-top: 1px;
+    margin-top: 24px;
     background: var(--hairline);
   }
 
