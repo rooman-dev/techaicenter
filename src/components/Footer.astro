@@ -1,0 +1,84 @@
+---
+import { business, legalLinks } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__business">
+      <p class="site-footer__name">{business.name}</p>
+      <p>{business.city}, {business.country}</p>
+      <p>{business.email}</p>
+      <p>{business.phone}</p>
+    </div>
+
+    <nav class="site-footer__legal" aria-label="Legal">
+      {
+        legalLinks.map((link) => (
+          <a class="site-footer__legal-link" href={link.href}>
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+
+  <p class="site-footer__copyright">© {year} {business.name}. All rights reserved.</p>
+</footer>
+
+<style>
+  .site-footer {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 64rem;
+    padding: 3rem 1.25rem 4rem;
+    border-top: 1px solid var(--hairline);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .site-footer__business p {
+    margin: 0 0 0.25rem;
+  }
+
+  .site-footer__name {
+    color: var(--text-secondary);
+    font-weight: var(--body-weight-semibold);
+  }
+
+  .site-footer__legal {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .site-footer__legal-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  .site-footer__legal-link:hover,
+  .site-footer__legal-link:focus-visible {
+    color: var(--text-primary);
+  }
+
+  .site-footer__copyright {
+    margin: 2.5rem 0 0;
+    color: var(--text-placeholder);
+  }
+
+  @media (min-width: 48rem) {
+    .site-footer__inner {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+  }
+</style>

@@ -1,0 +1,281 @@
+---
+import { featuredVideo } from '../data/site';
+import { isFilled } from '../data/utils';
+---
+
+<a
+  class="frame"
+  href={featuredVideo.url}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={`Watch: ${featuredVideo.title}`}
+>
+  <div class="frame__stack">
+    <span class="frame__ghost frame__ghost--far" aria-hidden="true"></span>
+    <span class="frame__ghost frame__ghost--near" aria-hidden="true"></span>
+
+    <div class="frame__panel">
+      <p class="frame__placeholder">[FEATURED VIDEO — 16:9]</p>
+
+      {isFilled(featuredVideo.duration) && <span class="frame__chip">{featuredVideo.duration}</span>}
+
+      <span class="frame__play" aria-hidden="true">
+        <span class="frame__ring"></span>
+        <span class="frame__triangle"></span>
+      </span>
+
+      <div class="frame__meta">
+        <span class="frame__progress"><span class="frame__progress-fill"></span></span>
+        <p class="frame__title">{featuredVideo.title}</p>
+        {isFilled(featuredVideo.views) && <p class="frame__views">{featuredVideo.views}</p>}
+      </div>
+    </div>
+  </div>
+
+  <p class="frame__caption">Latest campaign</p>
+</a>
+
+<style>
+  .frame {
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --dur: 0.55s;
+
+    display: block;
+    width: 540px;
+    text-decoration: none;
+  }
+
+  .frame__stack {
+    position: relative;
+    width: 540px;
+    padding-top: 32px;
+  }
+
+  /* Soft accent glow behind the whole stack. */
+  .frame__stack::before {
+    content: '';
+    position: absolute;
+    inset: -12%;
+    background: radial-gradient(
+      50% 50% at 50% 50%,
+      color-mix(in srgb, var(--accent) 13%, transparent),
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* The two empty panels behind the main one: a body of work. */
+  .frame__ghost {
+    position: absolute;
+    left: 50%;
+    top: 32px;
+    height: 304px;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    background: var(--glass-bg);
+    z-index: 1;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .frame__ghost--far {
+    width: 460px;
+    transform: translate(-50%, -32px);
+  }
+
+  .frame__ghost--near {
+    width: 500px;
+    transform: translate(-50%, -16px);
+  }
+
+  .frame__panel {
+    position: relative;
+    z-index: 2;
+    width: 540px;
+    height: 304px;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--text-primary) 3%, transparent);
+    overflow: hidden;
+    transition:
+      transform var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
+  }
+
+  .frame__placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% - 62px));
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--text-placeholder);
+    white-space: nowrap;
+  }
+
+  .frame__chip {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    background: var(--glass-bg);
+    padding: 3px 8px;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: var(--text-secondary);
+  }
+
+  .frame__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    background: var(--glass-bg);
+    transition: background var(--dur) var(--ease);
+  }
+
+  /* Ring pulsing outward behind the play button. */
+  .frame__ring {
+    position: absolute;
+    inset: -1px;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    animation: frame-pulse 2.8s var(--ease) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes frame-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    70% {
+      transform: scale(1.65);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1.65);
+      opacity: 0;
+    }
+  }
+
+  /* CSS-triangle play glyph, nudged right to sit optically centred. */
+  .frame__triangle {
+    width: 0;
+    height: 0;
+    margin-left: 5px;
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    border-left: 18px solid var(--cyan);
+    transition: border-left-color var(--dur) var(--ease);
+  }
+
+  .frame__meta {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 0 18px 16px;
+  }
+
+  .frame__progress {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--hairline);
+    margin-bottom: 12px;
+  }
+
+  .frame__progress-fill {
+    display: block;
+    width: 34%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--accent));
+  }
+
+  .frame__title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: var(--body-weight-medium);
+    color: var(--text-primary);
+  }
+
+  .frame__views {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .frame__caption {
+    margin: 18px 0 0;
+    text-align: center;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    color: var(--text-muted);
+  }
+
+  /* Hover: rear panels fan further up, main panel lifts, play button fills. */
+  .frame:hover .frame__ghost--near,
+  .frame:focus-visible .frame__ghost--near {
+    transform: translate(-50%, -26px);
+  }
+
+  .frame:hover .frame__ghost--far,
+  .frame:focus-visible .frame__ghost--far {
+    transform: translate(-50%, -48px);
+  }
+
+  .frame:hover .frame__panel,
+  .frame:focus-visible .frame__panel {
+    transform: translateY(-7px);
+    border-color: var(--accent);
+  }
+
+  .frame:hover .frame__play,
+  .frame:focus-visible .frame__play {
+    background: var(--cyan);
+  }
+
+  .frame:hover .frame__triangle,
+  .frame:focus-visible .frame__triangle {
+    border-left-color: var(--bg-base);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .frame__ghost,
+    .frame__panel,
+    .frame__play,
+    .frame__triangle {
+      transition: none;
+    }
+
+    .frame__ring {
+      animation: none;
+    }
+
+    .frame:hover .frame__ghost--near,
+    .frame:hover .frame__ghost--far,
+    .frame:hover .frame__panel {
+      transform: translate(-50%, -16px);
+    }
+
+    .frame:hover .frame__ghost--far {
+      transform: translate(-50%, -32px);
+    }
+
+    .frame:hover .frame__panel {
+      transform: none;
+    }
+  }
+</style>

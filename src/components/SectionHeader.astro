@@ -1,0 +1,29 @@
+---
+interface Props {
+  /** Two-digit section number, omitted on unnumbered sections. */
+  number?: string;
+  /** CSS custom property holding this section number's logo colour. */
+  numberColorVar?: string;
+  heading: string;
+  intro: string;
+}
+
+const { number, numberColorVar, heading, intro } = Astro.props;
+---
+
+<header class="mb-6">
+  {
+    number && (
+      <span class="font-display text-sm" style={`color: var(${numberColorVar});`}>
+        {number}
+      </span>
+    )
+  }
+  <h2
+    class="font-display text-3xl sm:text-4xl"
+    style="color: var(--text-primary); font-weight: var(--display-weight); letter-spacing: var(--display-tracking);"
+  >
+    {heading}
+  </h2>
+  <p class="mt-2 max-w-prose" style="color: var(--text-body);">{intro}</p>
+</header>

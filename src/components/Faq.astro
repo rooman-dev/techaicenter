@@ -1,0 +1,164 @@
+---
+import { faq } from '../data/site';
+---
+
+<section id="faq" class="faq">
+  <div class="faq__inner">
+    <p class="faq__label">{faq.label}</p>
+
+    <div class="faq__columns">
+      <div class="faq__intro">
+        <h2 class="faq__heading">
+          <span class="faq__heading-line">{faq.headingLine1}</span>
+          <span class="faq__heading-line">{faq.headingLine2}</span>
+        </h2>
+        <p class="faq__note">{faq.note}</p>
+      </div>
+
+      <!-- Deliberately not an accordion: every answer is open and readable. -->
+      <dl class="faq__list">
+        {
+          faq.items.map((item) => (
+            <div class="faq__item">
+              <dt class="faq__question">{item.question}</dt>
+              <dd class="faq__answer">{item.answer}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    width: 100%;
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+
+  .faq__inner {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 68rem;
+    padding: 4rem 1.25rem;
+  }
+
+  .faq__label {
+    margin: 0;
+    flex: none;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--section-05);
+  }
+
+  .faq__columns {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .faq__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: 42px;
+    line-height: 0.92;
+    letter-spacing: var(--display-tracking);
+    color: var(--text-primary);
+  }
+
+  .faq__heading-line {
+    display: block;
+  }
+
+  .faq__note {
+    margin: 1.25rem 0 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .faq__list {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .faq__item {
+    border-top: 1px solid var(--hairline);
+    padding: 1.5rem 0;
+    transition: transform 0.38s ease;
+  }
+
+  .faq__item:last-child {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .faq__item:hover {
+    transform: translateX(8px);
+  }
+
+  .faq__question {
+    margin: 0;
+    font-size: 18px;
+    font-weight: var(--body-weight-medium);
+    color: var(--text-primary);
+  }
+
+  .faq__answer {
+    margin: 0.625rem 0 0;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-body);
+  }
+
+  @media (min-width: 64rem) {
+    .faq__inner {
+      flex-direction: row;
+      gap: 0;
+      padding: 6rem 1.25rem;
+    }
+
+    .faq__label {
+      width: 130px;
+      padding-top: 1rem;
+    }
+
+    .faq__columns {
+      flex: 1;
+      min-width: 0;
+      flex-direction: row;
+      gap: 72px;
+    }
+
+    .faq__intro {
+      flex: 0 0 380px;
+      width: 380px;
+    }
+
+    .faq__heading {
+      font-size: 74px;
+    }
+
+    .faq__item:hover {
+      transform: translateX(16px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq__item {
+      transition: none;
+    }
+
+    .faq__item:hover {
+      transform: none;
+    }
+  }
+</style>

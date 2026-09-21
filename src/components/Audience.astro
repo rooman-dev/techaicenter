@@ -1,0 +1,276 @@
+---
+import { audience } from '../data/site';
+import { isFilled } from '../data/utils';
+import globe from '../assets/globe.svg?raw';
+---
+
+<section id="audience" class="audience">
+  <div class="audience__inner">
+    <p class="audience__label">{audience.label}</p>
+
+    <div class="audience__content">
+      <h2 class="audience__heading">
+        <span class="audience__heading-line">{audience.headingLine1}</span>
+        <span class="audience__heading-line">{audience.headingLine2}</span>
+      </h2>
+
+      <div class="audience__row">
+        <div class="audience__globe" set:html={globe} />
+
+        <div class="audience__detail">
+          <p class="audience__intro">{audience.intro}</p>
+
+          <h3 class="audience__subheading">{audience.watchTimeHeading}</h3>
+          <ul class="audience__countries">
+            {
+              audience.countries.map((country) => (
+                <li class="audience__country">
+                  <span class="audience__country-name">{country.name}</span>
+                  <span class="audience__track">
+                    <span class="audience__track-fill" style={`width:${country.fill}%;`} />
+                  </span>
+                  {isFilled(country.figure) && (
+                    <span class="audience__country-figure">{country.figure}</span>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+
+          <p class="audience__caption">{audience.caption}</p>
+
+          <div class="audience__stats">
+            {
+              audience.stats.filter((stat) => isFilled(stat.value)).map((stat) => (
+                <div class="audience__stat">
+                  <p class="audience__stat-value">{stat.value}</p>
+                  <p class="audience__stat-label">{stat.label}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .audience {
+    width: 100%;
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    overflow: hidden;
+  }
+
+  .audience__inner {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 68rem;
+    padding: 4rem 1.25rem;
+  }
+
+  .audience__label {
+    margin: 0;
+    flex: none;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--section-02);
+  }
+
+  .audience__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: 42px;
+    line-height: 0.96;
+    letter-spacing: var(--display-tracking);
+    color: var(--text-primary);
+  }
+
+  .audience__heading-line {
+    display: block;
+  }
+
+  .audience__row {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    margin-top: 2.5rem;
+  }
+
+  .audience__globe {
+    width: 350px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .audience__detail {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .audience__intro {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-body);
+  }
+
+  .audience__subheading {
+    margin: 2.5rem 0 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    font-weight: var(--body-weight-semibold);
+    color: var(--text-muted);
+  }
+
+  .audience__countries {
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .audience__country {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .audience__country:last-child {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .audience__country-name {
+    flex: 0 0 138px;
+    width: 138px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .audience__track {
+    flex: 1;
+    height: 2px;
+    background: var(--hairline);
+  }
+
+  .audience__track-fill {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .audience__country-figure {
+    flex: 0 0 50px;
+    width: 50px;
+    text-align: right;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .audience__caption {
+    margin: 1rem 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-placeholder);
+  }
+
+  .audience__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 2.5rem;
+  }
+
+  .audience__stat-value {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: var(--display-tracking);
+    color: var(--text-primary);
+  }
+
+  .audience__stat-label {
+    margin: 0.25rem 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .audience__inner {
+      flex-direction: row;
+      gap: 0;
+      padding: 6rem 1.25rem;
+    }
+
+    .audience__label {
+      width: 130px;
+      padding-top: 1rem;
+    }
+
+    .audience__content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .audience__heading {
+      font-size: 74px;
+    }
+
+    .audience__row {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    /* Nudged up and left so the globe overlaps the section padding slightly. */
+    .audience__globe {
+      flex: 0 0 600px;
+      width: 600px;
+      margin: -20px 0 0 -30px;
+    }
+  }
+</style>
+
+<!-- The globe is injected with set:html, so it carries no scope hash and must
+     be styled globally, namespaced under .audience__globe. -->
+<style is:global>
+  .audience__globe svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .audience__globe .gm-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: audience-pulse 3.2s ease-out infinite;
+  }
+
+  @keyframes audience-pulse {
+    0% {
+      transform: scale(0.55);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .audience__globe .gm-pulse {
+      animation: none;
+    }
+  }
+</style>

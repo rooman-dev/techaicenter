@@ -1,0 +1,365 @@
+---
+import { process } from '../data/site';
+---
+
+<section id="process" class="process">
+  <div class="process__inner">
+    <p class="process__label">{process.label}</p>
+
+    <div class="process__content">
+      <h2 class="process__heading">{process.heading}</h2>
+      <p class="process__intro">{process.intro}</p>
+
+      <div class="process__stage">
+        <ol class="process__grid">
+          {
+            process.steps.map((step) => (
+              <li class="step" style={`--float-delay:${step.floatDelay}; --step-color:${step.color};`}>
+                <span class="step__back" aria-hidden="true" />
+                <div class="step__front">
+                  <div class="step__top">
+                    <span class="step__number">{step.number}</span>
+                  </div>
+                  <div class="step__text">
+                    <h3 class="step__title">{step.title}</h3>
+                    <p class="step__description">{step.description}</p>
+                  </div>
+                  <span class="step__chip">{step.days}</span>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="rail" aria-hidden="true">
+        <span class="rail__dot" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process {
+    width: 100%;
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+
+  .process__inner {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 68rem;
+    padding: 4rem 1.25rem;
+  }
+
+  .process__label {
+    margin: 0;
+    flex: none;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--section-04);
+  }
+
+  .process__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: 44px;
+    line-height: 0.96;
+    letter-spacing: var(--display-tracking);
+    color: var(--text-primary);
+  }
+
+  .process__intro {
+    margin: 1.25rem 0 0;
+    max-width: 660px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-body);
+  }
+
+  .process__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Mobile: plain stacked rows, number beside title, no 3D at all. */
+  .step {
+    position: relative;
+  }
+
+  .step__back {
+    display: none;
+  }
+
+  /* Mobile row: number in the first column, then title, description and the
+     day chip stacked in the second. */
+  .step__front {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    column-gap: 1rem;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: color-mix(in srgb, var(--bg-base) 66%, transparent);
+  }
+
+  .step__top {
+    grid-column: 1;
+  }
+
+  .step__text {
+    grid-column: 2;
+  }
+
+  .step__number {
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: 32px;
+    line-height: 0.82;
+    color: var(--step-color);
+  }
+
+  .step__chip {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 0.75rem;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .step__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: var(--body-weight-semibold);
+    color: var(--text-primary);
+  }
+
+  .step__description {
+    margin: 0.375rem 0 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  /* Rail beneath the grid: a dot that steps through five stops. */
+  .rail {
+    position: relative;
+    height: 7px;
+    margin-top: 2.5rem;
+    background-image: linear-gradient(var(--hairline), var(--hairline));
+    background-size: 100% 1px;
+    background-position: 0 3px;
+    background-repeat: no-repeat;
+  }
+
+  .rail__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    margin-left: -3.5px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: rail-travel 9s steps(1, end) infinite;
+  }
+
+  /* Holds each stop, then jumps to the next. */
+  @keyframes rail-travel {
+    0%,
+    18% {
+      left: 10%;
+    }
+    20%,
+    38% {
+      left: 30%;
+    }
+    40%,
+    58% {
+      left: 50%;
+    }
+    60%,
+    78% {
+      left: 70%;
+    }
+    80%,
+    100% {
+      left: 90%;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .process__inner {
+      flex-direction: row;
+      gap: 0;
+      padding: 6rem 1.25rem;
+    }
+
+    .process__label {
+      width: 130px;
+      padding-top: 1rem;
+    }
+
+    .process__content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .process__heading {
+      font-size: 74px;
+    }
+
+    /* The shared camera for all five cards. */
+    .process__stage {
+      perspective: 1600px;
+      perspective-origin: 50% 40%;
+    }
+
+    .process__grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .step {
+      transform-style: preserve-3d;
+      transform: rotateY(-16deg) rotateX(5deg);
+      animation: step-float 7s ease-in-out infinite alternate;
+      animation-delay: var(--float-delay);
+      transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    @keyframes step-float {
+      from {
+        translate: 0 0;
+      }
+      to {
+        translate: 0 -13px;
+      }
+    }
+
+    /* The extruded edge, sitting behind the front face. */
+    .step__back {
+      display: block;
+      position: absolute;
+      inset: 0;
+      border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+      border-radius: 14px;
+      background: linear-gradient(
+        150deg,
+        color-mix(in srgb, var(--accent) 15%, transparent),
+        color-mix(in srgb, var(--accent) 2%, transparent)
+      );
+      transform: translateZ(-26px);
+    }
+
+    .step__front {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 0;
+      height: 290px;
+      padding: 24px 22px;
+      border-radius: 14px;
+      border: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--bg-base) 66%, transparent);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transform-style: preserve-3d;
+      transition:
+        border-color 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+        box-shadow 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .step__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      transform-style: preserve-3d;
+    }
+
+    /* Floats in front of the card face. */
+    .step__number {
+      font-size: 60px;
+      line-height: 0.82;
+      transform: translateZ(46px);
+      transition:
+        filter 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+        text-shadow 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    /* Back to the card's top-right corner, floating with the number. */
+    .step__chip {
+      position: absolute;
+      top: 24px;
+      right: 22px;
+      margin-top: 0;
+      transform: translateZ(46px);
+    }
+
+    .step__text {
+      transform: translateZ(24px);
+    }
+
+    .step:hover {
+      z-index: 2;
+      transform: rotateY(0deg) rotateX(0deg) translateY(-14px) scale(1.04);
+      animation-play-state: paused;
+    }
+
+    .step:hover .step__front {
+      border-color: var(--accent);
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.75);
+    }
+
+    .step:hover .step__number {
+      filter: brightness(1.25);
+      text-shadow: 0 0 18px currentColor;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rail__dot {
+      animation: none;
+      left: 10%;
+    }
+
+    .step,
+    .step:hover {
+      animation: none;
+      transform: none;
+      transition: none;
+    }
+
+    .step__back {
+      transform: none;
+    }
+
+    .step__number,
+    .step__chip,
+    .step__text {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

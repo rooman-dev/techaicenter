@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+import { profile } from '../data/site';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import AiLauncher from '../components/AiLauncher.astro';
+
+interface Props {
+  /** Defaults to the home page title. Legal pages pass their own. */
+  title?: string;
+  description?: string;
+}
+
+const { title = profile.title, description = profile.tagline } = Astro.props;
+
+/* Link previews ignore relative URLs, so these are made absolute against
+   `site` in astro.config.mjs. */
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og.png', Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={profile.name} />
+    {/* TODO before launch: /og.png is a blank 1200x630 placeholder. Replace it
+        with the real share card — it is what agencies see when the link is
+        pasted into Slack, LinkedIn or a DM. */}
+    <meta property="og:image" content={ogImage} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800&family=Archivo:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <Nav />
+    <slot />
+    <Footer />
+    <AiLauncher />
+  </body>
+</html>

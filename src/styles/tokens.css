@@ -1,0 +1,63 @@
+/* Design tokens — single source of truth, mirrors CLAUDE.md.
+   Values only. No component styles belong in this file. */
+
+:root {
+  /* Background */
+  --bg-base: #010206;
+  --bg-stop-1: #010206;
+  --bg-stop-2: #03050c;
+  --bg-stop-3: #040711;
+  --bg-stop-4: #020409;
+  --bg-stop-5: #000103;
+  --bg-gradient: linear-gradient(
+    180deg,
+    var(--bg-stop-1) 0%,
+    var(--bg-stop-2) 25%,
+    var(--bg-stop-3) 50%,
+    var(--bg-stop-4) 75%,
+    var(--bg-stop-5) 100%
+  );
+
+  /* Corner glows */
+  --glow-top-left: rgba(14, 40, 88, 0.17);
+  --glow-top-right: rgba(8, 28, 68, 0.12);
+
+  /* Text */
+  --text-primary: #e9eff7;
+  --text-secondary: #c5cfde;
+  --text-body: #9faec6;
+  --text-muted: #7b8eab;
+  --text-placeholder: #4a5566;
+
+  /* Hairlines and tints */
+  --hairline: rgba(255, 255, 255, 0.085);
+
+  /* Glass — nav, format panel, feature card, FAQ/contact bands, AI panel only */
+  --glass-bg: rgba(1, 2, 6, 0.66);
+  --glass-border: rgba(255, 255, 255, 0.075);
+  --glass-blur: 24px;
+  --glass-saturate: 105%;
+
+  /* Accents */
+  --accent: #2e90ff;
+  --cyan: #17b6ff;
+  --green-repeat-client: #00d94a;
+  --live-red: #ff3b4e;
+
+  /* Section number colours — one logo colour each */
+  --section-01: #f7861b;
+  --section-02: #17b6ff;
+  --section-03: #00d94a;
+  --section-04: #7b6bff;
+  --section-05: #ff3b4e;
+  --section-06: #e9eff7;
+
+  /* Type */
+  --font-display: 'Big Shoulders Display', system-ui, sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+  --display-weight: 800;
+  --display-tracking: 0em; /* already condensed — keep near zero */
+  --body-weight-regular: 400;
+  --body-weight-medium: 500;
+  --body-weight-semibold: 600;
+}

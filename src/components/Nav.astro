@@ -1,0 +1,386 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import { nav, navCta, wordmark } from '../data/site';
+---
+
+<header class="site-nav" data-open="false" data-nav>
+  <div class="site-nav__inner">
+    <a class="site-nav__brand" href="#hero">
+      <Image class="site-nav__logo" src={logo} alt="" height={34} loading="eager" />
+      <span class="site-nav__wordmark">{wordmark}</span>
+    </a>
+
+    <nav class="site-nav__links" aria-label="Sections">
+      {
+        nav.map((item) => (
+          <a class="site-nav__link" href={item.href}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a class="site-nav__cta" href={navCta.href}>{navCta.label}</a>
+
+    <button
+      class="burger"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="nav-panel"
+      data-nav-toggle
+    >
+      <span class="burger__bar" aria-hidden="true"></span>
+      <span class="burger__bar" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div class="panel" id="nav-panel" data-nav-panel>
+    <nav class="panel__links" aria-label="Sections">
+      {
+        nav.map((item) => (
+          <a class="panel__link" href={item.href}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+    <a class="panel__cta" href={navCta.href}>{navCta.label}</a>
+  </div>
+</header>
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .site-nav__inner {
+    margin: 0 auto;
+    display: flex;
+    max-width: 64rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .site-nav__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: auto;
+    text-decoration: none;
+  }
+
+  .site-nav__logo {
+    height: 34px;
+    width: auto;
+  }
+
+  .site-nav__wordmark {
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+    font-size: 1.375rem;
+    line-height: 1;
+    color: var(--text-primary);
+  }
+
+  /* Mobile-first: links are hidden on narrow screens, where the wordmark and
+     the Enquire CTA are what agencies need. They appear from 48rem up. */
+  .site-nav__links {
+    display: none;
+  }
+
+  /* The active padding is carried at all times, so the row never reflows as
+     the highlight travels. Only background-color and color change. */
+  .site-nav__link {
+    position: relative;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: var(--body-weight-medium);
+    padding: 9px 14px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    background-color: transparent;
+    transition:
+      color 160ms ease,
+      background-color 160ms ease;
+  }
+
+  .site-nav__link::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 6px;
+    height: 1px;
+    background: var(--cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 220ms ease;
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link:focus-visible {
+    color: var(--text-primary);
+  }
+
+  .site-nav__link:hover::after,
+  .site-nav__link:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .site-nav__cta {
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 0.4375rem 1rem;
+    font-size: 0.875rem;
+    font-weight: var(--body-weight-medium);
+    color: var(--text-primary);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      border-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .site-nav__cta:hover,
+  .site-nav__cta:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Scroll-spy: the section currently in the middle of the viewport.
+     Kept under reduced motion — it is information, not decoration.
+     Changes colour only: no padding, size or weight shifts. */
+  .site-nav__link.is-active,
+  .site-nav__cta.is-active {
+    background-color: var(--text-primary);
+    color: var(--bg-base);
+  }
+
+  .site-nav__link.is-active::after {
+    display: none;
+  }
+
+  /* Hamburger: two 22px hairlines inside a 44px hit area. */
+  .burger {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .burger__bar {
+    display: block;
+    width: 22px;
+    height: 1px;
+    background: var(--text-primary);
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  /* Open: the two bars cross into an X. */
+  .site-nav[data-open='true'] .burger__bar:first-child {
+    transform: translateY(3.5px) rotate(45deg);
+  }
+
+  .site-nav[data-open='true'] .burger__bar:last-child {
+    transform: translateY(-3.5px) rotate(-45deg);
+  }
+
+  .panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    border-bottom: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    padding: 0.5rem 1.25rem 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      visibility 0.3s;
+  }
+
+  .site-nav[data-open='true'] .panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .panel__links {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel__link {
+    border-bottom: 1px solid var(--hairline);
+    padding: 1.125rem 0;
+    font-size: 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  .panel__link:hover,
+  .panel__link:focus-visible {
+    color: var(--text-primary);
+  }
+
+  .panel__cta {
+    display: block;
+    margin-top: 1.5rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: var(--body-weight-medium);
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  .panel__cta:hover,
+  .panel__cta:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  @media (min-width: 48rem) {
+    .site-nav__links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-right: 0.5rem;
+    }
+
+    .site-nav__brand {
+      margin-right: 0;
+    }
+
+    /* Desktop has the full link row; the button and panel are gone entirely. */
+    .burger,
+    .panel {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-nav__link::after,
+    .burger__bar {
+      transition: none;
+    }
+
+    .panel {
+      transform: none;
+      transition:
+        opacity 0.3s ease,
+        visibility 0.3s;
+    }
+
+    .site-nav[data-open='true'] .panel {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Mobile menu. Scoped to its own elements so later scripts can coexist.
+  (() => {
+    const nav = document.querySelector<HTMLElement>('[data-nav]');
+    const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+    const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
+
+    if (!nav || !toggle || !panel) return;
+
+    const desktop = window.matchMedia('(min-width: 48rem)');
+    let previousOverflow = '';
+
+    const setOpen = (open: boolean) => {
+      if (open === (nav.dataset.open === 'true')) return;
+
+      nav.dataset.open = String(open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+
+      if (open) {
+        previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = previousOverflow;
+      }
+    };
+
+    toggle.addEventListener('click', () => setOpen(nav.dataset.open !== 'true'));
+
+    panel.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+
+    // The panel is display:none at desktop widths; close it so the scroll
+    // lock cannot survive a resize or rotation.
+    desktop.addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+
+    // Scroll-spy. IntersectionObserver rather than a CSS scroll timeline,
+    // which is not yet supported everywhere.
+    if (!('IntersectionObserver' in window)) return;
+
+    const links = new Map<string, HTMLAnchorElement>();
+
+    nav.querySelectorAll<HTMLAnchorElement>('.site-nav__link, .site-nav__cta').forEach((link) => {
+      const id = link.getAttribute('href');
+      if (id && id.startsWith('#') && document.querySelector(id)) links.set(id, link);
+    });
+
+    if (links.size === 0) return;
+
+    const setActive = (id: string | null) => {
+      links.forEach((link, key) => link.classList.toggle('is-active', key === id));
+    };
+
+    // A section counts as current once it occupies the middle band of the
+    // viewport, so only one is ever active.
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
+        });
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+    );
+
+    links.forEach((_link, id) => {
+      const section = document.querySelector(id);
+      if (section) spy.observe(section);
+    });
+  })();
+</script>

@@ -1,0 +1,57 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+@theme {
+  --color-bg-base: var(--bg-base);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-body: var(--text-body);
+  --color-text-muted: var(--text-muted);
+  --color-text-placeholder: var(--text-placeholder);
+  --color-accent: var(--accent);
+  --color-cyan: var(--cyan);
+  --color-repeat: var(--green-repeat-client);
+  --color-hairline: var(--hairline);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+html {
+  background-color: var(--bg-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-image:
+    radial-gradient(60rem 40rem at 0% 0%, var(--glow-top-left), transparent 70%),
+    radial-gradient(60rem 40rem at 100% 0%, var(--glow-top-right), transparent 70%),
+    var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-weight: var(--body-weight-regular);
+}
+
+/* Shared entrance: rise and fade. Callers set their own animation-delay. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.reveal {
+  animation: rise-in 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+  }
+}

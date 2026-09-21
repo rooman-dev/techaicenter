@@ -1,0 +1,139 @@
+---
+import type { LegalPage } from '../data/legal';
+import BaseLayout from './BaseLayout.astro';
+import { isFilled } from '../data/utils';
+
+interface Props {
+  page: LegalPage;
+}
+
+const { page } = Astro.props;
+---
+
+<BaseLayout title={page.title} description={page.description}>
+  <main class="legal">
+    <a class="legal__back" href="/">{page.backLabel}</a>
+
+    <h1 class="legal__heading">{page.heading}</h1>
+    {isFilled(page.lastUpdated) && <p class="legal__updated">{page.lastUpdated}</p>}
+
+    <ol class="legal__clauses">
+      {
+        page.clauses.filter((clause) => isFilled(clause.body)).map((clause) => (
+          <li class="clause">
+            <span class="clause__number" aria-hidden="true">
+              {clause.number}
+            </span>
+            <div class="clause__text">
+              <h2 class="clause__heading">{clause.heading}</h2>
+              <p class="clause__body">{clause.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </main>
+</BaseLayout>
+
+<style>
+  .legal {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 46rem;
+    padding: 3rem 1.25rem 5rem;
+  }
+
+  .legal__back {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  .legal__back:hover,
+  .legal__back:focus-visible {
+    color: var(--text-primary);
+  }
+
+  .legal__heading {
+    margin: 2rem 0 0;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: 46px;
+    line-height: 1;
+    letter-spacing: var(--display-tracking);
+    color: var(--text-primary);
+  }
+
+  .legal__updated {
+    margin: 0.75rem 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .legal__clauses {
+    margin: 2.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Mobile: the number sits above the text. */
+  .clause {
+    border-top: 1px solid var(--hairline);
+    padding: 1.75rem 0;
+  }
+
+  .clause:last-child {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .clause__number {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: 26px;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .clause__heading {
+    margin: 0.75rem 0 0;
+    font-size: 15px;
+    font-weight: var(--body-weight-medium);
+    color: var(--text-primary);
+  }
+
+  .clause__body {
+    margin: 0.5rem 0 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-body);
+  }
+
+  @media (min-width: 48rem) {
+    .legal {
+      padding: 4rem 1.25rem 6rem;
+    }
+
+    .clause {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .clause__number {
+      flex: 0 0 56px;
+      width: 56px;
+      padding-top: 0.125rem;
+    }
+
+    .clause__text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .clause__heading {
+      margin: 0;
+    }
+  }
+</style>

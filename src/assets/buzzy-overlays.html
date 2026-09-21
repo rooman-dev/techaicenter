@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buzzy Video Overlays</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  * { box-sizing:border-box; }
+  html,body { margin:0; padding:0; height:100%; background:#0b0d0e; font-family:'Space Grotesk',system-ui,sans-serif; }
+  #wrap { position:fixed; inset:0; padding-top:52px; display:flex; align-items:center; justify-content:center; }
+  #stage { width:1920px; height:1080px; transform-origin:center center; position:relative; overflow:hidden; }
+
+  .scene { position:absolute; inset:0; display:none; flex-direction:column; }
+  .scene.on { display:flex; }
+
+  /* name banner */
+  .banner { position:absolute; top:0; left:0; right:0; height:96px; display:flex; align-items:center; gap:22px;
+            padding:0 60px; background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,0)); z-index:5; }
+  .banner .dot { width:12px; height:12px; border-radius:50%; background:#00E5FF; box-shadow:0 0 16px #00E5FF; }
+  .banner .nm { font-family:'JetBrains Mono',monospace; font-size:24px; letter-spacing:6px; color:#00E5FF; text-transform:uppercase; }
+  .banner .cue { margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:20px; color:#77828a; }
+  body.noband .banner { display:none; }
+
+  .body { flex:1; display:flex; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+  .kicker { font-family:'JetBrains Mono',monospace; letter-spacing:6px; text-transform:uppercase; color:#6F7B84; }
+
+  /* elements start hidden; JS assigns the animation + delay */
+  .el { opacity:0; }
+  .el.go { opacity:1; }
+
+  @keyframes rise   { from{opacity:0;transform:translateY(38px)} to{opacity:1;transform:none} }
+  @keyframes fade   { from{opacity:0} to{opacity:1} }
+  @keyframes pop    { 0%{opacity:0;transform:scale(1.4)} 62%{opacity:1;transform:scale(.97)} 100%{opacity:1;transform:scale(1)} }
+  @keyframes barx   { from{opacity:1;transform:scaleX(0)} to{opacity:1;transform:scaleX(1)} }
+  @keyframes slideL { from{opacity:0;transform:translateX(-56px)} to{opacity:1;transform:none} }
+  @keyframes slideR { from{opacity:0;transform:translateX(56px)}  to{opacity:1;transform:none} }
+  @keyframes cell   { from{opacity:0;transform:scale(.55)} to{opacity:1;transform:scale(1)} }
+  @keyframes spread { from{opacity:0;letter-spacing:46px} to{opacity:1;letter-spacing:-6px} }
+  @keyframes strike { from{opacity:1;transform:scaleX(0)} to{opacity:1;transform:scaleX(1)} }
+  @keyframes bob    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(14px)} }
+  @keyframes pulse  { 0%,100%{opacity:.3} 50%{opacity:1} }
+  @keyframes glow   { 0%,100%{box-shadow:0 0 0 rgba(0,229,255,0)} 50%{box-shadow:0 0 44px rgba(0,229,255,.8)} }
+  @keyframes sweep  { from{transform:translateX(-110%)} to{transform:translateX(120%)} }
+  @keyframes dash   { from{opacity:1;stroke-dashoffset:210} to{opacity:1;stroke-dashoffset:0} }
+
+  #prog { position:absolute; left:0; bottom:0; height:5px; width:0; background:#00E5FF; z-index:6; }
+
+  #bar { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); display:flex; align-items:center; gap:10px;
+         background:rgba(20,24,26,.94); border:1px solid #2f363b; border-radius:999px; padding:9px 14px; z-index:50;
+         font-family:'JetBrains Mono',monospace; font-size:12px; color:#9BA5AD; }
+  #bar button { background:#262c30; border:1px solid #39424a; color:#e8eef2; font:inherit; padding:7px 13px; border-radius:999px; cursor:pointer; }
+  #bar button:hover { background:#323a40; border-color:#00E5FF; color:#00E5FF; }
+  #bar .name { min-width:240px; text-align:center; color:#F7F9FA; }
+  #bar .num { color:#00E5FF; }
+  body.rec #bar { opacity:0; pointer-events:none; }
+  #hint-unused { position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:50; font-family:'JetBrains Mono',monospace;
+          font-size:11px; letter-spacing:1.5px; color:#59636b; text-transform:uppercase; }
+
+  #tabs { position:fixed; top:0; left:0; right:0; z-index:60; display:flex; flex-wrap:wrap; gap:6px;
+          padding:10px 14px; background:rgba(12,15,16,.96); border-bottom:1px solid #22282c; }
+  #tabs button { background:#1d2225; border:1px solid #2c3439; color:#8d979e; font-family:'JetBrains Mono',monospace;
+                 font-size:12px; padding:7px 12px; border-radius:7px; cursor:pointer; white-space:nowrap; }
+  #tabs button:hover { border-color:#00E5FF; color:#dff9ff; }
+  #tabs button.sel { background:#00E5FF; border-color:#00E5FF; color:#10181b; font-weight:700; }
+  #topprog { position:fixed; top:0; left:0; height:3px; width:0; background:#00E5FF; z-index:61; box-shadow:0 0 12px #00E5FF; }
+  body.rec #tabs, body.rec #topprog { opacity:0; pointer-events:none; }
+</style>
+</head>
+<body>
+
+
+<div id="wrap"><div id="stage">
+
+<!-- 1 -->
+<section class="scene" data-name="1 · Phone message" data-end="9" data-cue="&ldquo;A zip file from my boss…&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">Phone message</div><div class="cue">&ldquo;A zip file from my boss…&rdquo;</div></div>
+  <div class="body" style="align-items:center;justify-content:center;">
+    <div style="width:1080px;display:flex;flex-direction:column;gap:26px;">
+      <div class="el" data-anim="fade" data-at="0.2" style="display:flex;align-items:center;gap:16px;padding-left:6px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:#00E5FF;animation:pulse 1.6s ease-in-out infinite;"></div>
+        <div class="mono" style="font-size:22px;letter-spacing:4px;color:#6F7B84;text-transform:uppercase;">Message · 11:47 PM</div>
+      </div>
+      <div class="el" data-anim="rise" data-at="0.6" style="background:#2E3338;border-radius:34px;border-top-left-radius:10px;padding:48px 52px;box-shadow:0 40px 100px rgba(0,0,0,.55);">
+        <div style="font-size:46px;color:#F7F9FA;line-height:1.42;font-weight:500;">Full launch campaign. Creator videos, the commercial, and a YouTube ad.</div>
+        <div style="font-size:46px;color:#00E5FF;line-height:1.42;font-weight:700;margin-top:18px;">Client's in at 9.</div>
+      </div>
+      <div class="el" data-anim="rise" data-at="4.6" style="display:flex;align-items:center;gap:24px;background:#22272A;border:1px solid #3A4147;border-radius:20px;padding:28px 34px;">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3h8L20 9v11.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 20.5Z"/><path d="M13 3v6h6"/><path d="M9.5 6h1.5M9.5 9h1.5M9.5 12h1.5M9.5 15h1.5"/></svg>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:30px;color:#F7F9FA;font-weight:500;">XGear40_Nova_Campaign.zip</div>
+          <div class="mono" style="font-size:22px;color:#6F7B84;">4 files · 18.2 MB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="scene" data-name="2 · 11:47 PM" data-end="7" data-cue="&ldquo;Nine. In the morning.&rdquo;" style="background:#111415;">
+  <div class="banner"><div class="dot"></div><div class="nm">11:47 PM</div><div class="cue">&ldquo;Nine. In the morning.&rdquo;</div></div>
+  <div class="body" style="flex-direction:column;align-items:center;justify-content:center;gap:40px;">
+    <div class="el" data-anim="spread" data-at="0.2" data-dur="0.9" style="font-size:300px;font-weight:700;color:#F7F9FA;line-height:1;">11:47</div>
+    <div class="el" data-anim="barx" data-at="1.3" style="height:4px;width:620px;background:#00E5FF;"></div>
+    <div class="el kicker" data-anim="fade" data-at="2.1" style="font-size:30px;">PM · Office empty</div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="scene" data-name="3 · Title card" data-end="5" data-cue="after &ldquo;One conversation.&rdquo;" style="background:radial-gradient(120% 90% at 16% 12%,#39424A 0%,#22272A 52%,#14181A 100%);">
+  <div class="banner"><div class="dot"></div><div class="nm">Title card</div><div class="cue">after &ldquo;One conversation.&rdquo;</div></div>
+  <div class="body" style="flex-direction:column;justify-content:center;padding:0 150px;">
+    <div class="el mono" data-anim="fade" data-at="0.2" style="font-size:26px;letter-spacing:9px;color:#00E5FF;text-transform:uppercase;margin-bottom:38px;">One night · One conversation</div>
+    <div class="el" data-anim="rise" data-at="0.6" style="font-size:140px;font-weight:700;color:#F7F9FA;line-height:1.02;letter-spacing:-4px;">I built a whole<br>ad campaign in<br><span style="color:#00E5FF;">one chat window</span></div>
+    <div class="el" data-anim="barx" data-at="1.6" style="height:7px;width:420px;background:#00E5FF;box-shadow:0 0 40px rgba(0,229,255,.6);transform-origin:left;margin-top:52px;"></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="scene" data-name="4 · File tally" data-end="11" data-cue="&ldquo;He wants the whole campaign…&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">File tally</div><div class="cue">&ldquo;He wants the whole campaign…&rdquo;</div></div>
+  <div class="body" style="flex-direction:column;justify-content:center;padding:0 170px;gap:46px;">
+    <div class="el kicker" data-anim="fade" data-at="0.2" style="font-size:24px;">What the client wants</div>
+    <div style="display:flex;flex-direction:column;gap:26px;">
+      <div class="el" data-anim="slideL" data-at="1.4" style="display:flex;align-items:baseline;gap:44px;"><div class="mono" style="font-size:96px;font-weight:700;color:#00E5FF;min-width:150px;">16</div><div style="font-size:50px;color:#F7F9FA;">ad visuals</div></div>
+      <div class="el" data-anim="slideL" data-at="2.9" style="display:flex;align-items:baseline;gap:44px;"><div class="mono" style="font-size:96px;font-weight:700;color:#00E5FF;min-width:150px;">3</div><div style="font-size:50px;color:#F7F9FA;">creator videos</div></div>
+      <div class="el" data-anim="slideL" data-at="4.3" style="display:flex;align-items:baseline;gap:44px;"><div class="mono" style="font-size:96px;font-weight:700;color:#00E5FF;min-width:150px;">1</div><div style="font-size:50px;color:#F7F9FA;">15-second commercial</div></div>
+      <div class="el" data-anim="slideL" data-at="5.7" style="display:flex;align-items:baseline;gap:44px;"><div class="mono" style="font-size:96px;font-weight:700;color:#00E5FF;min-width:150px;">1</div><div style="font-size:50px;color:#F7F9FA;">30-second YouTube ad</div></div>
+    </div>
+    <div class="el" data-anim="pop" data-at="7.8" style="display:flex;align-items:center;gap:24px;"><div style="height:4px;width:80px;background:#F0A500;"></div><div style="font-size:44px;color:#F0A500;font-weight:700;">That's a production team</div></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="scene" data-name="5 · Claude + Buzzy" data-end="7" data-cue="&ldquo;Claude thinks. Buzzy makes.&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">Claude + Buzzy</div><div class="cue">&ldquo;Claude thinks. Buzzy makes.&rdquo;</div></div>
+  <div class="body" style="flex-direction:column;align-items:center;justify-content:center;gap:76px;">
+    <div class="el kicker" data-anim="fade" data-at="0.2" style="font-size:24px;">How it works</div>
+    <div style="display:flex;align-items:center;gap:56px;">
+      <div class="el" data-anim="slideL" data-at="0.6" style="width:470px;background:#2E3338;border:1px solid #414A51;border-radius:26px;padding:48px 44px;display:flex;flex-direction:column;gap:20px;">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#F7F9FA" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 0 0-4 4v1a3.5 3.5 0 0 0 0 7v1a4 4 0 0 0 8 0v-1a3.5 3.5 0 0 0 0-7V7a4 4 0 0 0-4-4Z"/><path d="M12 3v18"/></svg>
+        <div style="font-size:54px;font-weight:700;color:#F7F9FA;">Claude</div><div style="font-size:32px;color:#9BA5AD;">does the thinking</div>
+      </div>
+      <svg width="210" height="60" viewBox="0 0 210 60" fill="none">
+        <path class="el" data-anim="dash" data-at="1.7" data-dur="0.8" d="M6 30h182" stroke="#00E5FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="210"/>
+        <path class="el" data-anim="fade" data-at="2.4" d="M176 18l18 12-18 12" stroke="#00E5FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="el" data-anim="slideR" data-at="2.6" style="width:470px;background:#2E3338;border:1px solid #00E5FF;border-radius:26px;padding:48px 44px;display:flex;flex-direction:column;gap:20px;box-shadow:0 0 70px rgba(0,229,255,.18);">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
+        <div style="font-size:54px;font-weight:700;color:#00E5FF;">Buzzy</div><div style="font-size:32px;color:#9BA5AD;">does the making</div>
+      </div>
+    </div>
+    <div class="el mono" data-anim="fade" data-at="4.2" style="font-size:26px;letter-spacing:6px;color:#6F7B84;">connected over MCP</div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="scene" data-name="6 · Old way vs MCP" data-end="8" data-cue="&ldquo;No API keys. No code…&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">Old way vs MCP</div><div class="cue">&ldquo;No API keys. No code…&rdquo;</div></div>
+  <div class="body" style="align-items:center;justify-content:center;gap:52px;padding:0 130px;">
+    <div class="el" data-anim="slideL" data-at="0.2" style="flex:1;background:#212528;border:1px solid #333A3F;border-radius:26px;padding:58px 50px;display:flex;flex-direction:column;gap:30px;">
+      <div class="mono" style="font-size:22px;letter-spacing:5px;color:#6F7B84;text-transform:uppercase;">The old way</div>
+      <div style="display:flex;flex-direction:column;gap:24px;">
+        <div style="position:relative;font-size:44px;color:#7E888F;">API keys<div class="el" data-anim="strike" data-at="1.0" style="position:absolute;left:0;right:0;top:52%;height:3px;background:#7E888F;transform-origin:left;"></div></div>
+        <div style="position:relative;font-size:44px;color:#7E888F;">Custom code<div class="el" data-anim="strike" data-at="2.0" style="position:absolute;left:0;right:0;top:52%;height:3px;background:#7E888F;transform-origin:left;"></div></div>
+        <div style="position:relative;font-size:44px;color:#7E888F;">Twelve browser tabs<div class="el" data-anim="strike" data-at="3.0" style="position:absolute;left:0;right:0;top:52%;height:3px;background:#7E888F;transform-origin:left;"></div></div>
+      </div>
+    </div>
+    <div class="el mono" data-anim="pop" data-at="3.9" style="font-size:30px;color:#6F7B84;letter-spacing:4px;">VS</div>
+    <div class="el" data-anim="slideR" data-at="4.2" style="flex:1;background:#2E3338;border:1px solid #00E5FF;border-radius:26px;padding:58px 50px;display:flex;flex-direction:column;gap:30px;box-shadow:0 0 70px rgba(0,229,255,.16);">
+      <div class="mono" style="font-size:22px;letter-spacing:5px;color:#00E5FF;text-transform:uppercase;">With MCP</div>
+      <div style="display:flex;flex-direction:column;gap:24px;">
+        <div style="display:flex;align-items:center;gap:18px;font-size:44px;color:#F7F9FA;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4.5 4.5L19 7"/></svg>One URL</div>
+        <div style="display:flex;align-items:center;gap:18px;font-size:44px;color:#F7F9FA;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4.5 4.5L19 7"/></svg>Zero code</div>
+        <div style="display:flex;align-items:center;gap:18px;font-size:44px;color:#F7F9FA;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4.5 4.5L19 7"/></svg>One minute</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="scene" data-name="7 · 16 images" data-end="8" data-cue="&ldquo;Four style directions. Sixteen images.&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">16 images</div><div class="cue">&ldquo;Four style directions. Sixteen images.&rdquo;</div></div>
+  <div class="body" style="align-items:center;justify-content:center;gap:120px;">
+    <div id="grid16" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;width:620px;"></div>
+    <div style="display:flex;flex-direction:column;gap:18px;width:480px;">
+      <div class="el" data-anim="rise" data-at="1.6" style="display:flex;align-items:baseline;gap:26px;"><div class="mono" style="font-size:100px;font-weight:700;color:#F7F9FA;line-height:1.2;">4</div><div style="font-size:44px;color:#9BA5AD;">style directions</div></div>
+      <div class="el" data-anim="fade" data-at="2.3" style="height:4px;width:100%;background:#3A4147;overflow:hidden;"><div style="height:100%;width:55%;background:#00E5FF;animation:sweep 1.4s ease infinite;"></div></div>
+      <div class="el" data-anim="rise" data-at="2.6" style="display:flex;align-items:baseline;gap:26px;"><div class="mono" style="font-size:190px;font-weight:700;color:#00E5FF;line-height:1;">16</div><div style="font-size:52px;color:#F7F9FA;">images</div></div>
+      <div class="el kicker" data-anim="fade" data-at="4.2" style="font-size:24px;margin-top:14px;">All at once</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="scene" data-name="8 · UGC cost" data-end="8" data-cue="&ldquo;Five hundred dollars a clip…&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">UGC cost</div><div class="cue">&ldquo;Five hundred dollars a clip…&rdquo;</div></div>
+  <div class="body" style="align-items:center;justify-content:center;">
+    <div class="el" data-anim="pop" data-at="0.2" style="background:#2A1D1D;border:3px solid #D94141;border-radius:30px;padding:70px 90px;display:flex;flex-direction:column;gap:44px;box-shadow:0 30px 90px rgba(217,65,65,.2);">
+      <div style="display:flex;align-items:center;gap:20px;">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#D94141" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 20h19Z"/><path d="M12 9.5v5M12 17.5h.01"/></svg>
+        <div class="mono" style="font-size:24px;letter-spacing:6px;color:#D94141;text-transform:uppercase;">Traditional UGC</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:28px;">
+        <div class="el" data-anim="slideL" data-at="1.4" style="display:flex;align-items:baseline;gap:34px;"><div class="mono" style="font-size:80px;font-weight:700;color:#F7F9FA;min-width:290px;">$500+</div><div style="font-size:44px;color:#C9A8A8;">per single clip</div></div>
+        <div class="el" data-anim="slideL" data-at="3.0" style="display:flex;align-items:baseline;gap:34px;"><div class="mono" style="font-size:80px;font-weight:700;color:#F7F9FA;min-width:290px;">2 wks</div><div style="font-size:44px;color:#C9A8A8;">turnaround</div></div>
+        <div class="el" data-anim="slideL" data-at="4.5" style="display:flex;align-items:baseline;gap:34px;"><div class="mono" style="font-size:80px;font-weight:700;color:#F7F9FA;min-width:290px;">1</div><div style="font-size:44px;color:#C9A8A8;">take, and you live with it</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="scene" data-name="9 · Revision timeline" data-end="9" data-cue="&ldquo;Only the opening changed.&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">Revision timeline</div><div class="cue">&ldquo;Only the opening changed.&rdquo;</div></div>
+  <div class="body" style="flex-direction:column;align-items:center;justify-content:center;gap:62px;padding:0 150px;">
+    <div class="el kicker" data-anim="fade" data-at="0.2" style="font-size:24px;">15-second commercial</div>
+    <div class="el" data-anim="fade" data-at="0.6" style="width:100%;display:flex;gap:8px;height:150px;">
+      <div style="width:13.33%;background:#00E5FF;border-radius:14px 5px 5px 14px;animation:glow 1.9s ease-in-out infinite;"></div>
+      <div style="flex:1;background:#343C42;border-radius:5px 14px 14px 5px;"></div>
+    </div>
+    <div style="width:100%;display:flex;justify-content:space-between;">
+      <div class="el" data-anim="rise" data-at="1.6" style="display:flex;flex-direction:column;gap:10px;width:30%;">
+        <div style="font-size:44px;font-weight:700;color:#00E5FF;">0–2s</div><div style="font-size:32px;color:#9BA5AD;line-height:1.35;">Replaced — new macro push-in</div>
+      </div>
+      <div class="el" data-anim="rise" data-at="3.4" style="display:flex;flex-direction:column;gap:10px;width:44%;text-align:right;align-items:flex-end;">
+        <div style="font-size:44px;font-weight:700;color:#F7F9FA;">2–15s</div><div style="font-size:32px;color:#9BA5AD;line-height:1.35;">Untouched — same model, light, colour, timing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="scene" data-name="10 · ROI table" data-end="11" data-cue="&ldquo;So let's add it up…&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">ROI table</div><div class="cue">&ldquo;So let's add it up…&rdquo;</div></div>
+  <div class="body" style="flex-direction:column;justify-content:center;padding:0 150px;">
+    <div class="el" data-anim="fade" data-at="0.2" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding-bottom:26px;border-bottom:2px solid #3A4147;">
+      <div></div><div class="mono" style="font-size:24px;letter-spacing:5px;color:#6F7B84;text-transform:uppercase;">Agency</div>
+      <div class="mono" style="font-size:24px;letter-spacing:5px;color:#00E5FF;text-transform:uppercase;">Claude × Buzzy</div>
+    </div>
+    <div class="el" data-anim="rise" data-at="1.6" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:baseline;padding:34px 0;border-bottom:1px solid #272C30;">
+      <div style="font-size:34px;color:#9BA5AD;">Team</div><div style="font-size:50px;color:#7E888F;">5+ people</div><div style="font-size:58px;color:#F7F9FA;font-weight:700;">1 person</div></div>
+    <div class="el" data-anim="rise" data-at="3.2" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:baseline;padding:34px 0;border-bottom:1px solid #272C30;">
+      <div style="font-size:34px;color:#9BA5AD;">Time</div><div style="font-size:50px;color:#7E888F;">1–2 weeks</div><div style="font-size:58px;color:#00E5FF;font-weight:700;">18 minutes</div></div>
+    <div class="el" data-anim="rise" data-at="4.8" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:baseline;padding:34px 0;border-bottom:1px solid #272C30;">
+      <div style="font-size:34px;color:#9BA5AD;">Cost</div><div style="font-size:50px;color:#7E888F;">$3,000+</div><div style="font-size:58px;color:#F7F9FA;font-weight:700;">Credits</div></div>
+    <div class="el" data-anim="rise" data-at="6.4" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:baseline;padding:34px 0;">
+      <div style="font-size:34px;color:#9BA5AD;">Output</div><div style="font-size:50px;color:#7E888F;">A few statics</div><div style="font-size:58px;color:#F7F9FA;font-weight:700;">Full campaign</div></div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="scene" data-name="11 · 18 minutes" data-end="9" data-cue="&ldquo;Eighteen minutes.&rdquo;" style="background:#111415;">
+  <div class="banner"><div class="dot"></div><div class="nm">18 minutes</div><div class="cue">&ldquo;Eighteen minutes.&rdquo;</div></div>
+  <div class="body" style="flex-direction:column;align-items:center;justify-content:center;gap:34px;">
+    <div class="el" data-anim="rise" data-at="0.3" style="display:flex;align-items:baseline;gap:44px;">
+      <div class="mono" style="font-size:88px;color:#4E585F;text-decoration:line-through;">11:47</div>
+      <svg width="66" height="34" viewBox="0 0 34 18" fill="none" stroke="#4E585F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9h28M24 3l7 6-7 6"/></svg>
+      <div class="mono" style="font-size:120px;color:#F7F9FA;font-weight:700;">12:05</div>
+    </div>
+    <div class="el" data-anim="barx" data-at="1.6" style="height:4px;width:520px;background:#00E5FF;"></div>
+    <div class="el" data-anim="pop" data-at="2.4" style="font-size:220px;font-weight:700;color:#00E5FF;line-height:1;letter-spacing:-6px;">18 MINUTES</div>
+    <div class="el kicker" data-anim="fade" data-at="4.2" style="font-size:28px;">Whole campaign. Done.</div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="scene" data-name="12 · Link card" data-end="9" data-cue="&ldquo;Link is in the description.&rdquo;" style="background:#16191B;">
+  <div class="banner"><div class="dot"></div><div class="nm">Link card</div><div class="cue">&ldquo;Link is in the description.&rdquo;</div></div>
+  <div class="body" style="flex-direction:column;align-items:center;justify-content:center;gap:52px;">
+    <div class="el" data-anim="fade" data-at="0.3" style="font-size:66px;color:#F7F9FA;font-weight:500;">Connect it yourself</div>
+    <div class="el" data-anim="rise" data-at="1.2" style="background:#2E3338;border:3px solid #F0A500;border-radius:24px;padding:46px 76px;box-shadow:0 0 80px rgba(240,165,0,.22);">
+      <div class="mono" style="font-size:64px;color:#F0A500;font-weight:700;">mcp.buzzy.now/mcp</div>
+    </div>
+    <svg class="el" data-anim="fade" data-at="2.6" width="54" height="76" viewBox="0 0 30 42" fill="none" stroke="#F0A500" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="animation:bob 1.5s ease-in-out infinite;"><path d="M15 4v32M6 28l9 9 9-9"/></svg>
+    <div class="el kicker" data-anim="fade" data-at="3.6" style="font-size:26px;">Link in the description</div>
+  </div>
+</section>
+
+<div id="prog"></div>
+</div></div>
+
+<div id="bar">
+  <button id="prev">←</button>
+  <div class="name"><span class="num" id="idx">1</span>/<span id="total">12</span> · <span id="label"></span></div>
+  <button id="next">→</button>
+  <button id="replay">Replay</button>
+  <span id="clock" style="min-width:86px;text-align:right;color:#59636b;"></span>
+  <button id="recbtn">Record</button>
+  <button id="bandbtn">Banner</button>
+</div>
+
+<script>
+  // ---- selectable name tabs + top progress ----
+  (function(){
+    var host = document.createElement('div'); host.id = 'tabs';
+    document.body.appendChild(host);
+    var p = document.createElement('div'); p.id = 'topprog';
+    document.body.appendChild(p);
+    window.__buildTabs = function(items, onPick){
+      host.innerHTML = '';
+      items.forEach(function(nm, i){
+        var b = document.createElement('button');
+        b.textContent = nm;
+        b.onclick = function(){ onPick(i); };
+        host.appendChild(b);
+      });
+    };
+    window.__selTab = function(i){
+      [].slice.call(host.children).forEach(function(b, j){ b.classList.toggle('sel', j === i); });
+    };
+    window.__topProg = function(pct){ p.style.width = pct + '%'; };
+  })();
+
+(function(){
+  // 16-cell grid, cells land 0.1s–1.3s
+  var g = document.getElementById('grid16');
+  for (var i=0;i<16;i++){
+    var d = document.createElement('div');
+    d.className = 'el';
+    d.dataset.anim = 'cell';
+    d.dataset.at = (0.1 + i*0.075).toFixed(2);
+    d.style.cssText = 'width:100%;aspect-ratio:4/5;border-radius:10px;background:'+((i%8<4)?'#343C42':'#3B444B')+';';
+    g.appendChild(d);
+  }
+
+  var scenes = [].slice.call(document.querySelectorAll('.scene'));
+  var cur = 0, raf = null;
+  document.getElementById('total').textContent = scenes.length;
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1920, window.innerHeight/1080);
+    document.getElementById('stage').style.transform = 'scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function run(scene){
+    if (raf) cancelAnimationFrame(raf);
+    scene.querySelectorAll('.el').forEach(function(el){
+      el.style.animation = 'none';
+      el.style.opacity = '0';
+      void el.offsetWidth;                        // reflow so the animation restarts
+      var name = el.dataset.anim || 'fade';
+      var at   = parseFloat(el.dataset.at || 0);
+      var dur  = parseFloat(el.dataset.dur || 0.5);
+      el.style.animation = name+' '+dur+'s cubic-bezier(.2,.8,.3,1) '+at+'s both';
+    });
+
+    var end = parseFloat(scene.dataset.end || 9) * 1000, t0 = performance.now();
+    (function tick(){
+      var e = performance.now() - t0;
+      var pc = Math.min(100, e/end*100);
+      document.getElementById('prog').style.width = pc+'%';
+      if (window.__topProg) window.__topProg(pc);
+      document.getElementById('clock').textContent = (e/1000).toFixed(1)+'s / '+(end/1000).toFixed(0)+'s';
+      if (e < end) raf = requestAnimationFrame(tick);
+    })();
+  }
+
+  function show(i){
+    scenes.forEach(function(s){ s.classList.remove('on'); });
+    cur = (i + scenes.length) % scenes.length;
+    scenes[cur].classList.add('on');
+    document.getElementById('idx').textContent = cur+1;
+    if (window.__selTab) window.__selTab(cur);
+    document.getElementById('label').textContent = scenes[cur].dataset.name;
+    run(scenes[cur]);
+  }
+
+  document.getElementById('next').onclick    = function(){ show(cur+1); };
+  document.getElementById('prev').onclick    = function(){ show(cur-1); };
+  document.getElementById('replay').onclick  = function(){ show(cur); };
+  document.getElementById('recbtn').onclick  = function(){ document.body.classList.toggle('rec'); };
+  document.getElementById('bandbtn').onclick = function(){ document.body.classList.toggle('noband'); };
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === ' ') { e.preventDefault(); show(cur); }
+    else if (e.key === 'ArrowRight') show(cur+1);
+    else if (e.key === 'ArrowLeft')  show(cur-1);
+    else if (e.key.toLowerCase() === 'r') show(cur);
+    else if (e.key.toLowerCase() === 'f') document.body.classList.toggle('rec');
+    else if (e.key.toLowerCase() === 'b') document.body.classList.toggle('noband');
+    else if (/^[1-9]$/.test(e.key)) show(parseInt(e.key,10)-1);
+  });
+
+  if (window.__buildTabs) window.__buildTabs(scenes.map(function(s){ return s.dataset.name; }), show);
+  show(0);
+})();
+</script>
+</body>
+</html>
