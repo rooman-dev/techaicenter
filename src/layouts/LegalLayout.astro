@@ -19,10 +19,12 @@ const { page } = Astro.props;
 
     <ol class="legal__clauses">
       {
-        page.clauses.filter((clause) => isFilled(clause.body)).map((clause) => (
+        page.clauses
+          .filter((clause) => isFilled(clause.body))
+          .map((clause, index) => (
           <li class="clause">
             <span class="clause__number" aria-hidden="true">
-              {clause.number}
+              {String(index + 1).padStart(2, '0')}
             </span>
             <div class="clause__text">
               <h2 class="clause__heading">{clause.heading}</h2>

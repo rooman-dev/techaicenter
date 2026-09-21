@@ -1,6 +1,13 @@
 ---
-import { featuredVideo } from '../data/site';
+import { Image } from 'astro:assets';
+import { featuredVideo, work } from '../data/site';
 import { isFilled } from '../data/utils';
+
+/* The frame shows the featured video's own thumbnail when a work entry
+   matches its URL; otherwise it stays a plain frame. */
+const featuredEntry = [work.feature, ...work.entries].find(
+  (item) => item.url === featuredVideo.url
+);
 ---
 
 <a
@@ -15,7 +22,17 @@ import { isFilled } from '../data/utils';
     <span class="frame__ghost frame__ghost--near" aria-hidden="true"></span>
 
     <div class="frame__panel">
-      <p class="frame__placeholder">[FEATURED VIDEO — 16:9]</p>
+      {
+      featuredEntry && (
+        <Image
+          class="frame__img"
+          src={featuredEntry.thumb}
+          alt={featuredEntry.thumbAlt}
+          width={1080}
+          loading="lazy"
+        />
+      )
+    }
 
       {isFilled(featuredVideo.duration) && <span class="frame__chip">{featuredVideo.duration}</span>}
 
@@ -102,17 +119,12 @@ import { isFilled } from '../data/utils';
       border-color var(--dur) var(--ease);
   }
 
-  .frame__placeholder {
+  .frame__img {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, calc(-50% - 62px));
-    margin: 0;
-    font-size: 12px;
-    letter-spacing: 1.6px;
-    text-transform: uppercase;
-    color: var(--text-placeholder);
-    white-space: nowrap;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .frame__chip {

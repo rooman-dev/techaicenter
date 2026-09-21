@@ -29,7 +29,7 @@ export const terms: LegalPage = {
   description:
     'Terms covering sponsored video production, fees, usage rights and cancellation for brand and agency clients.',
   heading: 'Terms',
-  lastUpdated: 'Last updated [DATE]',
+  lastUpdated: 'Last updated 21 September 2026',
   backLabel: '← Back to home',
   clauses: [
     {
@@ -55,12 +55,12 @@ export const terms: LegalPage = {
     {
       number: '05',
       heading: 'Cancellation',
-      body: 'Campaigns cancelled after production has begun are invoiced pro rata for work completed. [ADD YOUR OWN CANCELLATION TERM]',
+      body: 'Campaigns cancelled after production has begun are invoiced pro rata for work completed. Once the written agreement is signed, either party may cancel before production starts at no cost; any upfront payment is refunded in full.',
     },
     {
       number: '06',
       heading: 'Governing law',
-      body: 'These terms are governed by the laws of the Islamic Republic of Pakistan. [CONFIRM THIS WITH YOUR ACCOUNTANT OR LAWYER]',
+      body: 'These terms are governed by the laws of the Islamic Republic of Pakistan.',
     },
     {
       number: '07',
@@ -75,7 +75,7 @@ export const privacy: LegalPage = {
   description:
     'What the enquiry form collects, why it is collected, how long it is kept and how to have it deleted.',
   heading: 'Privacy',
-  lastUpdated: 'Last updated [DATE]',
+  lastUpdated: 'Last updated 21 September 2026',
   backLabel: '← Back to home',
   clauses: [
     {
@@ -91,7 +91,7 @@ export const privacy: LegalPage = {
     {
       number: '03',
       heading: 'How long it is kept',
-      body: 'Enquiries are kept for [NUMBER] years and then deleted.',
+      body: 'Enquiries are kept for 12 months and then deleted.',
     },
     {
       number: '04',
@@ -101,7 +101,7 @@ export const privacy: LegalPage = {
     {
       number: '05',
       heading: 'Analytics',
-      body: '[STATE WHICH ANALYTICS THIS SITE USES, OR WRITE: this site uses no analytics and sets no cookies]',
+      body: 'This site uses no analytics, tracking cookies or advertising pixels. Netlify, our host, keeps standard server logs for security.',
     },
     {
       number: '06',
