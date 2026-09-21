@@ -285,6 +285,13 @@ const { feature } = work;
     background: var(--hairline);
   }
 
+  /* Tablet: three across. Mobile stays single column. */
+  @media (min-width: 48rem) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
   .cell {
     display: block;
     background: var(--bg-stop-2);
@@ -428,7 +435,7 @@ const { feature } = work;
     }
 
     .grid {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
     }
 
     .voices {

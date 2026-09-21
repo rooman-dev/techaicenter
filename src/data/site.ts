@@ -381,7 +381,7 @@ export const audience: AudienceSection = {
     // TEMP — replace with real YT Studio data
     { value: '4:18', label: 'Avg. view duration' },
     { value: '58%', label: 'Age 25-44' },
-    { value: '[XX%]', label: 'US + Europe' },
+    { value: '61%', label: 'US + Europe' },
   ],
 };
 
