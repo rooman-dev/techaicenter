@@ -1,5 +1,8 @@
 ---
 import { process } from '../data/site';
+
+const tw = (text: string, seconds = 0.9) =>
+  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
 ---
 
 <section id="process" class="process">
@@ -7,7 +10,9 @@ import { process } from '../data/site';
     <p class="process__label">{process.label}</p>
 
     <div class="process__content">
-      <h2 class="process__heading">{process.heading}</h2>
+      <h2 class="process__heading">
+        <span class="tw" style={tw(process.heading)}>{process.heading}</span>
+      </h2>
       <p class="process__intro">{process.intro}</p>
 
       <div class="process__stage">
@@ -282,8 +287,6 @@ import { process } from '../data/site';
       border-radius: 14px;
       border: 1px solid var(--hairline);
       background: color-mix(in srgb, var(--bg-base) 66%, transparent);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
       transform-style: preserve-3d;
       transition:
         border-color 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),

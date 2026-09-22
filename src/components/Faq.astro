@@ -1,5 +1,8 @@
 ---
 import { faq } from '../data/site';
+
+const tw = (text: string, seconds = 0.9) =>
+  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
 ---
 
 <section id="faq" class="faq">
@@ -9,8 +12,12 @@ import { faq } from '../data/site';
     <div class="faq__columns">
       <div class="faq__intro">
         <h2 class="faq__heading">
-          <span class="faq__heading-line">{faq.headingLine1}</span>
-          <span class="faq__heading-line">{faq.headingLine2}</span>
+          <span class="faq__heading-line">
+            <span class="tw" style={tw(faq.headingLine1, 0.7)}>{faq.headingLine1}</span>
+          </span>
+          <span class="faq__heading-line">
+            <span class="tw" style={tw(faq.headingLine2, 0.8)}>{faq.headingLine2}</span>
+          </span>
         </h2>
         <p class="faq__note">{faq.note}</p>
       </div>

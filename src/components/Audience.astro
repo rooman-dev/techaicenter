@@ -2,6 +2,9 @@
 import { audience } from '../data/site';
 import { isFilled } from '../data/utils';
 import globe from '../assets/globe.svg?raw';
+
+const tw = (text: string, seconds = 0.9) =>
+  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
 ---
 
 <section id="audience" class="audience">
@@ -10,8 +13,12 @@ import globe from '../assets/globe.svg?raw';
 
     <div class="audience__content">
       <h2 class="audience__heading">
-        <span class="audience__heading-line">{audience.headingLine1}</span>
-        <span class="audience__heading-line">{audience.headingLine2}</span>
+        <span class="audience__heading-line">
+          <span class="tw" style={tw(audience.headingLine1)}>{audience.headingLine1}</span>
+        </span>
+        <span class="audience__heading-line">
+          <span class="tw" style={tw(audience.headingLine2, 1.2)}>{audience.headingLine2}</span>
+        </span>
       </h2>
 
       <div class="audience__row">

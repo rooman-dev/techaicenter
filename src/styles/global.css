@@ -1,3 +1,21 @@
+/* Self-hosted, latin subset, woff2 only. Archivo ships as one variable file
+   covering 400-600, so the three weights are a single download. */
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-var.woff2') format('woff2-variations');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Big Shoulders Display';
+  src: url('/fonts/big-shoulders-800.woff2') format('woff2-variations');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import 'tailwindcss';
 @import './tokens.css';
 
@@ -54,4 +72,61 @@ body {
   .reveal {
     animation: none;
   }
+}
+
+/* Glass cost controls. Components read --glass-blur, so both rules land
+   everywhere without touching a single component. */
+@media (max-width: 768px) {
+  :root {
+    --glass-blur: 16px;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    /* No blur available: lean on opacity so text stays legible. */
+    --glass-bg: rgba(1, 2, 6, 0.93);
+  }
+}
+
+/* Typewriter shared by the section headings. The text is always in the HTML;
+   only its clip is animated, so it reads fine with JS off or under
+   prefers-reduced-motion. Each heading supplies its own step count inline. */
+.tw {
+  display: inline-block;
+  clip-path: inset(0 100% 0 0);
+  animation-name: tw-reveal;
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+
+.tw.is-typed {
+  animation-play-state: running;
+  will-change: clip-path;
+}
+
+.tw.is-done {
+  will-change: auto;
+}
+
+@keyframes tw-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw {
+    clip-path: none;
+    animation: none;
+  }
+}
+
+/* No JS: nothing would ever add .is-typed, so show the text. */
+.no-js .tw {
+  clip-path: none;
+  animation: none;
 }

@@ -2,6 +2,10 @@
 import { contact } from '../data/site';
 
 const { fitCheck } = contact;
+
+const tw = (text: string, seconds = 0.9) =>
+  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
+
 const halves = contact.fields.filter((field) => field.half);
 const rest = contact.fields.filter((field) => !field.half);
 ---
@@ -13,9 +17,11 @@ const rest = contact.fields.filter((field) => !field.half);
     <div class="contact__columns">
       <div class="contact__left">
         <h2 class="contact__heading">
-          <span class="contact__heading-line">{contact.headingLine1}</span>
+          <span class="contact__heading-line">
+            <span class="tw" style={tw(contact.headingLine1, 0.6)}>{contact.headingLine1}</span>
+          </span>
           <span class="contact__heading-line contact__heading-line--accent">
-            {contact.headingLine2}
+            <span class="tw" style={tw(contact.headingLine2, 0.9)}>{contact.headingLine2}</span>
           </span>
         </h2>
         <p class="contact__intro">{contact.intro}</p>
@@ -241,8 +247,6 @@ const rest = contact.fields.filter((field) => !field.half);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     padding: 1.5rem;
   }
 

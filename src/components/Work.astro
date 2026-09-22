@@ -4,13 +4,19 @@ import { work, testimonials, showTestimonials } from '../data/site';
 import { isFilled } from '../data/utils';
 
 const { feature } = work;
+
+const tw = (text: string, seconds = 0.9) =>
+  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
+
 ---
 
 <section id="work" class="work">
   <div class="work__header">
     <div class="work__header-main">
       <p class="work__label">{work.label}</p>
-      <h2 class="work__heading">{work.heading}</h2>
+      <h2 class="work__heading">
+        <span class="tw" style={tw(work.heading)}>{work.heading}</span>
+      </h2>
     </div>
     <p class="work__note">{work.note}</p>
   </div>
@@ -157,8 +163,6 @@ const { feature } = work;
     border: 1px solid var(--glass-border);
     border-radius: 14px;
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     overflow: hidden;
     text-decoration: none;
     transition: border-color 0.35s ease;
@@ -387,8 +391,6 @@ const { feature } = work;
     border: 1px solid var(--glass-border);
     border-radius: 14px;
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     padding: 1.75rem;
   }
 

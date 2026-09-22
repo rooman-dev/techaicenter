@@ -1,5 +1,8 @@
 ---
 import { format } from '../data/site';
+
+const tw = (text: string, seconds = 0.9) =>
+  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
 ---
 
 <section id="format" class="format">
@@ -7,8 +10,10 @@ import { format } from '../data/site';
     <p class="format__label">{format.label}</p>
     <div class="format__headline">
       <h2 class="format__heading">
-        {format.headingLead}{' '}
-        <span class="format__heading-tail">{format.headingTail}</span>
+        <span class="tw" style={tw(`${format.headingLead} ${format.headingTail}`, 1.1)}>
+          {format.headingLead}{' '}
+          <span class="format__heading-tail">{format.headingTail}</span>
+        </span>
       </h2>
       <p class="format__intro">{format.intro}</p>
     </div>

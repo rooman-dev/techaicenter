@@ -29,7 +29,8 @@ const featuredEntry = [work.feature, ...work.entries].find(
           src={featuredEntry.thumb}
           alt={featuredEntry.thumbAlt}
           width={1080}
-          loading="lazy"
+          loading="eager"
+          fetchpriority="high"
         />
       )
     }

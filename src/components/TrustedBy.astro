@@ -59,10 +59,15 @@ import { trustedBy } from '../data/site';
       -webkit-text-stroke-color 220ms ease;
   }
 
-  /* Hover hollows the name out: fill drops away, a hairline stroke remains. */
-  .trusted__brand:hover {
-    color: transparent;
-    -webkit-text-stroke: 1px var(--text-secondary);
+  /* Hover hollows the name out: fill drops away, a hairline stroke remains.
+     Pointer devices only — on touch there is no hover state to leave, and the
+     name would stay hollow after a tap. Colour and stroke-colour only: no
+     letter-spacing or size change, so the row never reflows. */
+  @media (hover: hover) {
+    .trusted__brand:hover {
+      color: transparent;
+      -webkit-text-stroke: 1px var(--text-secondary);
+    }
   }
 
   @media (min-width: 64rem) {
