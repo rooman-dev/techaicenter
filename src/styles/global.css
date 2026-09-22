@@ -130,3 +130,36 @@ body {
   clip-path: none;
   animation: none;
 }
+
+/* Outline hover on display headings. Pointer devices only: on touch there is
+   no hover to leave and the heading would stay hollow after a tap.
+   Only colour and stroke-colour transition, so nothing reflows — and because
+   the stroke is paint, not layout, it sits inside the typewriter's clip-path
+   rather than fighting it. */
+@media (hover: hover) {
+  .oh {
+    -webkit-text-stroke: 1.5px transparent;
+    transition:
+      color 0.35s ease,
+      -webkit-text-stroke-color 0.35s ease;
+  }
+
+  .oh:hover {
+    color: transparent;
+    -webkit-text-stroke-color: var(--text-primary);
+  }
+
+  /* Coloured runs stay solid: they keep their own fill and take no stroke. */
+  .oh .hl {
+    -webkit-text-stroke-color: transparent;
+    transition:
+      color 0.35s ease,
+      -webkit-text-stroke-color 0.35s ease;
+  }
+
+  /* No colour rule here on purpose: each run keeps the colour its own
+     component sets, and only the stroke is suppressed. */
+  .oh:hover .hl {
+    -webkit-text-stroke-color: transparent;
+  }
+}

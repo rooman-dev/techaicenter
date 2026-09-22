@@ -9,10 +9,10 @@ const tw = (text: string, seconds = 0.9) =>
   <div class="format__header">
     <p class="format__label">{format.label}</p>
     <div class="format__headline">
-      <h2 class="format__heading">
+      <h2 class="format__heading oh">
         <span class="tw" style={tw(`${format.headingLead} ${format.headingTail}`, 1.1)}>
           {format.headingLead}{' '}
-          <span class="format__heading-tail">{format.headingTail}</span>
+          <span class="format__heading-tail hl">{format.headingTail}</span>
         </span>
       </h2>
       <p class="format__intro">{format.intro}</p>
