@@ -65,7 +65,7 @@ export const terms: LegalPage = {
     {
       number: '07',
       heading: 'Contact',
-      body: `${business.name}, Islamabad, Pakistan. ${business.email} · ${business.phone}`,
+      body: `${business.name}, ${business.address}. ${business.email} · ${business.phone}`,
     },
   ],
 };
@@ -106,7 +106,7 @@ export const privacy: LegalPage = {
     {
       number: '06',
       heading: 'Your rights and contact',
-      body: `Email ${business.email} to request a copy of your data or to have it deleted. ${business.name}, Islamabad, Pakistan.`,
+      body: `Email ${business.email} to request a copy of your data or to have it deleted. ${business.name}, ${business.city}, ${business.country}.`,
     },
   ],
 };

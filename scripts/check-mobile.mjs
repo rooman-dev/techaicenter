@@ -7,11 +7,16 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 await page.goto(BASE, { waitUntil: 'networkidle' });
 
-// --- 9. caret gone once typing finishes ---
-await page.waitForTimeout(6500);
-const caret = await page.$eval('.type--two .type__caret', (el) => parseFloat(getComputedStyle(el).opacity));
-console.log('caret opacity after typing:', caret);
-if (caret > 0.05) fail.push(`caret still visible (opacity ${caret})`);
+// --- hero rotator advances and keeps its height ---
+await page.waitForTimeout(1200);
+const before = await page.$eval('[data-rotator-headline]', (el) => el.textContent?.trim());
+const boxBefore = await page.$eval('.hero__headline', (el) => Math.round(el.getBoundingClientRect().height));
+await page.waitForTimeout(7000);
+const after = await page.$eval('[data-rotator-headline]', (el) => el.textContent?.trim());
+const boxAfter = await page.$eval('.hero__headline', (el) => Math.round(el.getBoundingClientRect().height));
+console.log(`rotator: "${before}" -> "${after}" | headline box ${boxBefore} -> ${boxAfter}`);
+if (before === after) fail.push('rotator did not advance');
+if (boxBefore !== boxAfter) fail.push(`headline box jumped ${boxBefore} -> ${boxAfter}`);
 
 // --- 8. open the menu ---
 await page.click('[data-nav-toggle]');

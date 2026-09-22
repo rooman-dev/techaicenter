@@ -44,9 +44,14 @@ export interface LegalLink {
 export interface Business {
   /** Registered or trading name, as it should appear in the footer. */
   name: string;
+  /** Full street address. */
+  address: string;
   city: string;
   country: string;
+  /** Business address — the form, sponsors and the legal pages use this. */
   email: string;
+  /** Personal address, shown alongside the business one. */
+  personalEmail: string;
   phone: string;
   /** Separate from `phone` on purpose: the two may diverge. */
   whatsapp: string;
@@ -64,6 +69,11 @@ export interface HeroStat {
   label: string;
 }
 
+export interface HeroRotation {
+  headline: string;
+  message: string;
+}
+
 export interface Hero {
   /** Six dot colours, left to right, in the eyebrow row. */
   eyebrowDots: string[];
@@ -72,6 +82,8 @@ export interface Hero {
   /** Rendered in --accent. */
   headlineLine2: string;
   intro: string;
+  /** Pair 1 is rendered in the HTML; the rest are swapped in by script. */
+  rotations: HeroRotation[];
   buttons: HeroButton[];
   stats: HeroStat[];
 }
@@ -124,14 +136,6 @@ export interface AudienceSection {
   countries: AudienceCountry[];
   caption: string;
   stats: AudienceStat[];
-}
-
-/** The single video shown in the hero frame. Links out; never embedded. */
-export interface FeaturedVideo {
-  url: string;
-  title: string;
-  duration: string;
-  views: string;
 }
 
 export interface Project {
@@ -235,23 +239,6 @@ export interface ContactSection {
   submitLabel: string;
 }
 
-export interface WorkMetric {
-  value: string;
-  label: string;
-}
-
-export interface WorkFeature {
-  brand: string;
-  url: string;
-  /** Title and scope in one paragraph, as shown on the card. */
-  blurb: string;
-  thumb: ImageMetadata;
-  thumbAlt: string;
-  recentLabel: string;
-  repeatLabel: string;
-  metrics: WorkMetric[];
-}
-
 export interface Testimonial {
   quote: string;
   name: string;
@@ -262,7 +249,6 @@ export interface WorkSection {
   label: string;
   heading: string;
   note: string;
-  feature: WorkFeature;
   entries: Project[];
   entryCta: string;
   repeatTag: string;
@@ -285,9 +271,36 @@ export const hero: Hero = {
   headlineLine2: 'I build something with them.',
   intro:
     'One dedicated long-form video, made properly. You give me the product - software, hardware, a platform, an API - and I take it from nothing to a finished piece of work on camera. My audience watches because the result is real, which is why they go and try the thing.',
+  rotations: [
+    {
+      headline: 'More sign-ups for your AI tool.',
+      message:
+        'One dedicated video that shows viewers exactly why they need your product — and sends them straight to it.',
+    },
+    {
+      headline: 'Real customers, not just views.',
+      message:
+        "I build something real with your tool on camera — that's what turns watchers into paying users.",
+    },
+    {
+      headline: 'Launch day, done right.',
+      message:
+        'Time your video to your launch or update, so the first people who hear about it are ready to try it.',
+    },
+    {
+      headline: 'Your tool, explained better than your own demo.',
+      message:
+        'A clear walkthrough viewers actually finish — and leave knowing exactly how to use your product.',
+    },
+    {
+      headline: 'A video that keeps selling for months.',
+      message:
+        'Long-form content ranks on YouTube and Google, so new viewers keep finding your product long after launch day.',
+    },
+  ],
   buttons: [
-    { label: 'Request a quote', href: '#contact', variant: 'solid' },
-    { label: 'See the work', href: '#work', variant: 'ghost' },
+    { label: 'Get more customers', href: '#contact', variant: 'solid' },
+    { label: 'See past campaigns', href: '#work', variant: 'ghost' },
   ],
   stats: [
     { value: '60.6K', label: 'Subscribers' },
@@ -295,14 +308,6 @@ export const hero: Hero = {
     // say which, or the figure misreads as per-video performance.
     { value: '409K', label: 'Views, last 28 days' },
   ],
-};
-
-export const featuredVideo: FeaturedVideo = {
-  url: 'https://www.youtube.com/watch?v=hd7gswpPLWg',
-  title: 'CapCut x Seedance 2.5 - marketing video, step by step',
-  // TEMP — replace with real YT Studio data
-  duration: '9:42',
-  views: '12.4K',
 };
 
 /** Brand names in the trusted-by band, in display order. */
@@ -318,7 +323,7 @@ export const trustedBy: string[] = [
 ];
 
 export const format: FormatSection = {
-  label: '01 — Format',
+  label: '02 — Format',
   headingLead: 'The dedicated video.',
   headingTail: "That's it.",
   intro:
@@ -365,7 +370,7 @@ export const format: FormatSection = {
 };
 
 export const audience: AudienceSection = {
-  label: '02 — Audience',
+  label: '03 — Audience',
   headingLine1: 'People who buy tools,',
   headingLine2: 'not people who scroll past them.',
   intro:
@@ -389,25 +394,20 @@ export const audience: AudienceSection = {
 
 /** Every entry needs a brand, a real YouTube URL and a one-line scope. */
 export const work: WorkSection = {
-  label: '03 — Work',
+  label: '01 — Campaigns',
   heading: 'Selected campaigns',
   note: 'Three of these brands booked a second video.',
-  feature: {
-    brand: 'CapCut',
-    url: 'https://www.youtube.com/watch?v=hd7gswpPLWg',
-    blurb:
-      'How to Make a Marketing Video Step-by-Step - a complete marketing video built in CapCut with Seedance 2.5 at 1080p, from blank timeline to finished export, nothing skipped.',
-    thumb: capcutThumb,
-    thumbAlt: 'CapCut campaign video thumbnail',
-    recentLabel: 'Most recent',
-    repeatLabel: 'Repeat client',
-    metrics: [
-      // TEMP — replace with real YT Studio data
-      { value: '9:42', label: 'Runtime' },
-      { value: '12.4K', label: 'Views' },
-    ],
-  },
   entries: [
+    {
+      brand: 'CapCut',
+      url: 'https://www.youtube.com/watch?v=hd7gswpPLWg',
+      title: 'How to Make a Marketing Video Step-by-Step',
+      scope:
+        'A complete marketing video built in CapCut with Seedance 2.5 at 1080p, from blank timeline to finished export.',
+      repeatClient: false,
+      thumb: capcutThumb,
+      thumbAlt: 'CapCut campaign video thumbnail',
+    },
     {
       brand: 'FORMA / OnlyDoc',
       url: 'https://www.youtube.com/watch?v=2OUQbKE4iQY',
@@ -550,7 +550,7 @@ export const faq: FaqSection = {
     {
       question: 'Where are you, and how do you invoice?',
       answer:
-        "Islamabad, Pakistan, working with brands worldwide. Invoiced in USD by PayPal or bank transfer. Physical products often can't be shipped here, so software and platforms are the easiest fit.",
+        "Multan, Pakistan, working with brands worldwide. Invoiced in USD by PayPal or bank transfer. Physical products often can't be shipped here, so software and platforms are the easiest fit.",
     },
   ],
 };
@@ -559,9 +559,11 @@ export const faq: FaqSection = {
    these, so filling them in here fills them in on the legal pages too. */
 export const business: Business = {
   name: 'Abid Ali',
-  city: 'Islamabad',
+  address: 'House No D1, Raza Shah Road, near 2 Talwar Chowk, Cantonment Area, Multan, Pakistan',
+  city: 'Multan',
   country: 'Pakistan',
   email: 'techaicenter@gmail.com',
+  personalEmail: 'abidalishakir@yahoo.com',
   phone: '+92 333 6089123',
   whatsapp: '+92 333 6089123',
 };
@@ -574,12 +576,14 @@ export const contact: ContactSection = {
     'Product, timing, and what you want people to do after watching. Quote and an available slot back within one business day.',
   details: [
     {
-      label: 'Email',
-      // Shared with the footer and the legal pages via `business`.
-      // The href stays bracketed too, so a placeholder address cannot
-      // quietly send mail to the wrong inbox before the real one is set.
+      label: 'Business',
       value: business.email,
       href: `mailto:${business.email}`,
+    },
+    {
+      label: 'Abid Ali — personal',
+      value: business.personalEmail,
+      href: `mailto:${business.personalEmail}`,
     },
     { label: 'WhatsApp', value: business.whatsapp },
     {
@@ -589,7 +593,7 @@ export const contact: ContactSection = {
       href: profile.channelUrl,
       external: true,
     },
-    { label: 'Based in', value: 'Islamabad, Pakistan · UTC+5' },
+    { label: 'Based in', value: `${business.city}, ${business.country} · UTC+5` },
   ],
   fitCheck: {
     eyebrow: 'Instant fit check',
@@ -660,9 +664,9 @@ export const wordmark = 'techaicenter';
 
 /** Section links in the sticky nav. Contact is reached via the CTA instead. */
 export const nav: NavItem[] = [
+  { label: 'Campaigns', href: '#work' },
   { label: 'Format', href: '#format' },
   { label: 'Audience', href: '#audience' },
-  { label: 'Work', href: '#work' },
   { label: 'Process', href: '#process' },
   { label: 'FAQ', href: '#faq' },
 ];

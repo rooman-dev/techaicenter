@@ -9,7 +9,7 @@ const tw = (text: string, seconds = 0.9) =>
   <div class="format__header">
     <p class="format__label">{format.label}</p>
     <div class="format__headline">
-      <h2 class="format__heading oh">
+      <h2 class="format__heading">
         <span class="tw" style={tw(`${format.headingLead} ${format.headingTail}`, 1.1)}>
           {format.headingLead}{' '}
           <span class="format__heading-tail hl">{format.headingTail}</span>
@@ -66,7 +66,7 @@ const tw = (text: string, seconds = 0.9) =>
   .format {
     margin: 0 auto;
     width: 100%;
-    max-width: 68rem;
+    max-width: var(--container);
     padding: calc(var(--section-gap) / 2) var(--pad);
   }
 
@@ -82,15 +82,15 @@ const tw = (text: string, seconds = 0.9) =>
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1.8px;
-    color: var(--section-01);
+    color: var(--section-02);
   }
 
   .format__heading {
     margin: 0;
     font-family: var(--font-display);
     font-weight: var(--display-weight);
-    font-size: 44px;
-    line-height: 0.96;
+    font-size: clamp(2.5rem, 7vw, 3rem);
+    line-height: 1.12;
     letter-spacing: var(--display-tracking);
     color: var(--text-primary);
   }
@@ -102,7 +102,7 @@ const tw = (text: string, seconds = 0.9) =>
   .format__intro {
     margin: 1.25rem 0 0;
     max-width: 44rem;
-    font-size: 18px;
+    font-size: var(--copy);
     line-height: 1.6;
     color: var(--text-body);
   }
@@ -268,7 +268,7 @@ const tw = (text: string, seconds = 0.9) =>
     }
 
     .format__heading {
-      font-size: 74px;
+      font-size: clamp(3rem, 5.6vw, 5rem);
     }
 
     /* Starts at the heading indent, not the container edge: the 130px label

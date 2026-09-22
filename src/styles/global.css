@@ -42,6 +42,18 @@
 :root {
   --pad: 16px;
   --section-gap: clamp(80px, 10vw, 140px);
+  --container: 68rem;
+  /* Body copy grows a little on big screens rather than staying 16px. */
+  --copy: clamp(16px, 1.05vw, 19px);
+  --copy-sm: clamp(14px, 0.85vw, 16px);
+}
+
+/* Large displays: a wider column and slightly larger type, so the page does
+   not read as a narrow strip on a 27" Mac. */
+@media (min-width: 90rem) {
+  :root {
+    --container: 80rem;
+  }
 }
 
 @media (min-width: 48rem) {
@@ -131,6 +143,18 @@ video {
   }
 }
 
+/* Display type never clips its descenders: line-height stays at or above 1,
+   and the typewriter's clip-path gets a little room below the baseline. */
+h1,
+h2,
+h3 {
+  padding-bottom: 0.06em;
+}
+
+.tw {
+  padding-bottom: 0.08em;
+}
+
 /* Typewriter shared by the section headings. The text is always in the HTML
    and visible by default — it is hidden ONLY once the script has marked the
    document ready, so a failed, blocked or slow script can never leave a
@@ -175,44 +199,10 @@ html.tw-ready .tw:not(.is-typed) {
 
 
 /* Display headings never leave a single word stranded on the last line. */
-h1.oh,
-h2.oh,
+h1,
+h2,
 .legal__heading,
 .card__heading {
   text-wrap: balance;
 }
 
-/* Outline hover on display headings. Pointer devices only: on touch there is
-   no hover to leave and the heading would stay hollow after a tap.
-
-   Selectors are element-qualified (h1.oh, not .oh) on purpose. Astro compiles
-   a component rule like .work__heading into .work__heading[data-astro-cid-x],
-   which scores the same as a bare .oh:hover and loads later — so the heading's
-   own colour won the tie and the hover did nothing. Adding the element name
-   breaks the tie in our favour.
-
-   Children need no rule: .tw sets no colour of its own, so it inherits the
-   transparent fill, while a .hl run keeps the colour its component sets and
-   only has its stroke suppressed. Colour and stroke-colour are the only
-   properties touched, so nothing reflows and the clip-path is unaffected. */
-@media (hover: hover) {
-  h1.oh,
-  h2.oh {
-    -webkit-text-stroke: 1.5px transparent;
-    transition:
-      color 0.35s ease,
-      -webkit-text-stroke-color 0.35s ease;
-  }
-
-  h1.oh:hover,
-  h2.oh:hover {
-    color: transparent;
-    -webkit-text-stroke-color: var(--text-primary);
-  }
-
-  h1.oh .hl,
-  h2.oh .hl {
-    -webkit-text-stroke-color: transparent;
-    transition: -webkit-text-stroke-color 0.35s ease;
-  }
-}
