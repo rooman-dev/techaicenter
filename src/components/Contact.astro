@@ -155,7 +155,8 @@ const rest = contact.fields.filter((field) => !field.half);
     flex-direction: column;
     gap: 1rem;
     max-width: 68rem;
-    padding: 4rem 1.25rem;
+    /* Extra bottom room so the fixed launcher never sits on the submit. */
+    padding: 4rem var(--pad) 7.5rem;
   }
 
   .contact__label {
@@ -232,6 +233,8 @@ const rest = contact.fields.filter((field) => !field.half);
   }
 
   .details__link {
+    display: inline-block;
+    padding-block: 14px;
     color: var(--text-secondary);
     text-decoration: none;
     transition: color 160ms ease;
@@ -292,10 +295,11 @@ const rest = contact.fields.filter((field) => !field.half);
   .fit__input {
     flex: 1;
     min-width: 0;
+    min-height: 44px;
     border: none;
     border-bottom: 1px solid var(--hairline);
     background: transparent;
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
     /* 16px: anything smaller makes iOS zoom the page on focus. */
     font-size: 16px;
     font-family: inherit;
@@ -314,6 +318,7 @@ const rest = contact.fields.filter((field) => !field.half);
 
   .fit__button {
     width: 100%;
+    min-height: 44px;
     border: 1px solid var(--accent);
     border-radius: 999px;
     background: transparent;
@@ -375,10 +380,11 @@ const rest = contact.fields.filter((field) => !field.half);
 
   .field__control {
     width: 100%;
+    min-height: 44px;
     border: none;
     border-bottom: 1px solid var(--hairline);
     background: transparent;
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
     /* 16px: anything smaller makes iOS zoom the page on focus. */
     font-size: 16px;
     font-family: inherit;
@@ -398,6 +404,7 @@ const rest = contact.fields.filter((field) => !field.half);
 
   .form__submit {
     width: 100%;
+    min-height: 48px;
     margin-top: 2rem;
     border: 1px solid var(--hairline);
     border-radius: 999px;
@@ -423,7 +430,7 @@ const rest = contact.fields.filter((field) => !field.half);
     .contact__inner {
       flex-direction: row;
       gap: 0;
-      padding: 6rem 1.25rem;
+      padding: 6rem var(--pad);
     }
 
     .contact__label {

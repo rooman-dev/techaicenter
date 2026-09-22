@@ -35,13 +35,34 @@
   --font-body: var(--font-body);
 }
 
+/* Page gutter: 16px phones, 24px tablets, 48px desktop. Every section reads
+   this instead of carrying its own fixed padding. */
+:root {
+  --pad: 16px;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --pad: 24px;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --pad: 48px;
+  }
+}
+
 html {
   background-color: var(--bg-base);
   scroll-behavior: smooth;
 }
 
 body {
-  min-height: 100vh;
+  /* svh, not vh: mobile browsers report vh as the tallest possible viewport,
+     which leaves a gap under the fold while the URL bar is showing. */
+  min-height: 100svh;
+  overflow-wrap: break-word;
   background-image:
     radial-gradient(60rem 40rem at 0% 0%, var(--glow-top-left), transparent 70%),
     radial-gradient(60rem 40rem at 100% 0%, var(--glow-top-right), transparent 70%),
@@ -76,9 +97,27 @@ body {
 
 /* Glass cost controls. Components read --glass-blur, so both rules land
    everywhere without touching a single component. */
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
 @media (max-width: 768px) {
   :root {
     --glass-blur: 16px;
+  }
+}
+
+/* Small print stays readable on phones; the desktop sizes are by design. */
+@media (max-width: 63.99rem) {
+  .hero__eyebrow-text,
+  .audience__caption,
+  .cell__scope,
+  .cell__title,
+  .voice__by,
+  .format__fact-note {
+    font-size: 14px !important;
   }
 }
 

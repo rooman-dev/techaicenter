@@ -68,11 +68,12 @@ import { nav, navCta, wordmark } from '../data/site';
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 0.75rem 1.25rem;
+    padding: 0.75rem var(--pad);
   }
 
   .site-nav__brand {
     display: flex;
+    min-height: 44px;
     align-items: center;
     gap: 0.5rem;
     margin-right: auto;
@@ -103,6 +104,9 @@ import { nav, navCta, wordmark } from '../data/site';
      the highlight travels. Only background-color and color change. */
   .site-nav__link {
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.9375rem;
@@ -140,6 +144,9 @@ import { nav, navCta, wordmark } from '../data/site';
   }
 
   .site-nav__cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     border: 1px solid var(--glass-border);
     border-radius: 999px;
     padding: 0.4375rem 1rem;
@@ -216,7 +223,7 @@ import { nav, navCta, wordmark } from '../data/site';
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    padding: 0.5rem 1.25rem 1.5rem;
+    padding: 0.5rem var(--pad) 1.5rem;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
@@ -238,6 +245,8 @@ import { nav, navCta, wordmark } from '../data/site';
   }
 
   .panel__link {
+    display: block;
+    min-height: 44px;
     border-bottom: 1px solid var(--hairline);
     padding: 1.125rem 0;
     font-size: 20px;
@@ -252,6 +261,7 @@ import { nav, navCta, wordmark } from '../data/site';
 
   .panel__cta {
     display: block;
+    min-height: 44px;
     margin-top: 1.5rem;
     border: 1px solid var(--glass-border);
     border-radius: 999px;
@@ -269,7 +279,9 @@ import { nav, navCta, wordmark } from '../data/site';
     color: var(--accent);
   }
 
-  @media (min-width: 48rem) {
+  /* Hamburger carries tablets too: the five links plus CTA do not fit
+     comfortably until the desktop layout. */
+  @media (min-width: 64rem) {
     .site-nav__links {
       display: flex;
       align-items: center;

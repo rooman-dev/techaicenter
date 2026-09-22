@@ -67,7 +67,7 @@ const tw = (text: string, seconds = 0.9) =>
     margin: 0 auto;
     width: 100%;
     max-width: 68rem;
-    padding: 4rem 1.25rem;
+    padding: 4rem var(--pad);
   }
 
   .format__header {
@@ -140,6 +140,7 @@ const tw = (text: string, seconds = 0.9) =>
   .format__grid {
     display: grid;
     grid-template-columns: 1fr;
+    /* 1 col phones, 2 from tablet up. */
     gap: 1.5rem 2rem;
     margin: 0;
     padding: 0;
@@ -241,9 +242,15 @@ const tw = (text: string, seconds = 0.9) =>
     color: var(--text-placeholder);
   }
 
+  @media (min-width: 48rem) {
+    .format__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (min-width: 64rem) {
     .format {
-      padding: 6rem 1.25rem;
+      padding: 6rem var(--pad);
     }
 
     .format__header {

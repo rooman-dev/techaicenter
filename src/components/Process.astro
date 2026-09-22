@@ -60,7 +60,7 @@ const tw = (text: string, seconds = 0.9) =>
     flex-direction: column;
     gap: 1rem;
     max-width: 68rem;
-    padding: 4rem 1.25rem;
+    padding: 4rem var(--pad);
   }
 
   .process__label {
@@ -212,11 +212,17 @@ const tw = (text: string, seconds = 0.9) =>
     }
   }
 
+  @media (min-width: 48rem) and (max-width: 63.99rem) {
+    .process__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (min-width: 64rem) {
     .process__inner {
       flex-direction: row;
       gap: 0;
-      padding: 6rem 1.25rem;
+      padding: 6rem var(--pad);
     }
 
     .process__label {
@@ -363,6 +369,24 @@ const tw = (text: string, seconds = 0.9) =>
     .step__text {
       transform: none;
       transition: none;
+    }
+  }
+
+  /* Touch devices get the cards flat: the tilt and float exist to respond to
+     a pointer, and a paused 3D layer is only a compositing cost here. */
+  @media (hover: none) {
+    .step,
+    .step:hover {
+      transform: none;
+      animation: none;
+    }
+
+    .step__back {
+      display: none;
+    }
+
+    .rail__dot {
+      animation: none;
     }
   }
 </style>

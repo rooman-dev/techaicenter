@@ -42,7 +42,7 @@ const { page } = Astro.props;
     margin: 0 auto;
     width: 100%;
     max-width: 46rem;
-    padding: 3rem 1.25rem 5rem;
+    padding: 3rem var(--pad) 5rem;
   }
 
   .legal__back {
@@ -115,7 +115,7 @@ const { page } = Astro.props;
 
   @media (min-width: 48rem) {
     .legal {
-      padding: 4rem 1.25rem 6rem;
+      padding: 4rem var(--pad) 6rem;
     }
 
     .clause {

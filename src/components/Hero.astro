@@ -62,10 +62,12 @@ import VideoFrame from './VideoFrame.astro';
   /* Mobile-first: single column throughout. The desktop grid, the 118px
      headline and the divided stats row arrive at the 64rem breakpoint. */
   .hero {
+    /* cqi below sizes the headline against this box, not the window. */
+    container-type: inline-size;
     margin: 0 auto;
     width: 100%;
     max-width: 68rem;
-    padding: 4rem 1.25rem 3rem;
+    padding: 4rem var(--pad) 3rem;
   }
 
   .hero__eyebrow {
@@ -99,7 +101,8 @@ import VideoFrame from './VideoFrame.astro';
     margin: 0;
     font-family: var(--font-display);
     font-weight: var(--display-weight);
-    font-size: 54px;
+    /* Fluid against the container so the long second line always fits. */
+    font-size: clamp(2.25rem, 8.6cqi, 5.5rem);
     line-height: 0.92;
     letter-spacing: -0.5px;
     color: var(--text-primary);
@@ -131,6 +134,9 @@ import VideoFrame from './VideoFrame.astro';
     top: 0.08em;
     bottom: 0.08em;
     left: 0;
+    /* Pulled back by its own width so that at left: 100% it rests inside the
+       heading box instead of hanging 3px past it. */
+    margin-left: -3px;
     width: 3px;
     background: currentColor;
   }
@@ -220,6 +226,9 @@ import VideoFrame from './VideoFrame.astro';
   }
 
   .hero__button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     border-radius: 999px;
     padding: 0.625rem 1.25rem;
     font-size: 0.9375rem;
@@ -290,16 +299,11 @@ import VideoFrame from './VideoFrame.astro';
 
   @media (min-width: 64rem) {
     .hero {
-      padding: 6rem 1.25rem 4rem;
+      padding: 6rem var(--pad) 4rem;
     }
 
-    /* The second line is one nowrap run ~10.6x the font size wide, so a flat
-       118px overflowed the viewport below ~1500px and put a scrollbar on the
-       page. Clamping to 8.1vw keeps the full 118px on wide screens and scales
-       it down just enough to fit everywhere else — no clipping, no hidden
-       overflow, the whole line stays readable. */
     .hero__headline {
-      font-size: clamp(54px, 8.1vw, 118px);
+      font-size: clamp(2.5rem, 8.6cqi, 5.5rem);
     }
 
     .hero__body {

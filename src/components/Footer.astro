@@ -32,7 +32,7 @@ const year = new Date().getFullYear();
     margin: 0 auto;
     width: 100%;
     max-width: 64rem;
-    padding: 3rem 1.25rem 4rem;
+    padding: 3rem var(--pad) 4rem;
     border-top: 1px solid var(--hairline);
     font-size: 0.875rem;
     color: var(--text-muted);
@@ -59,6 +59,8 @@ const year = new Date().getFullYear();
   }
 
   .site-footer__legal-link {
+    display: inline-block;
+    padding-block: 14px;
     color: var(--text-muted);
     text-decoration: none;
     transition: color 160ms ease;
