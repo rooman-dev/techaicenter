@@ -222,6 +222,16 @@ export interface AiLauncher {
   draft: string;
 }
 
+export interface ThanksPage {
+  title: string;
+  description: string;
+  heading: string;
+  body: string;
+  primaryLabel: string;
+  primaryHref: string;
+  secondaryLabel: string;
+}
+
 export interface ContactSection {
   label: string;
   headingLine1: string;
@@ -231,6 +241,7 @@ export interface ContactSection {
   details: ContactDetail[];
   fitCheck: ContactFitCheck;
   formName: string;
+  formAction: string;
   fields: ContactField[];
   submitLabel: string;
 }
@@ -599,6 +610,8 @@ export const contact: ContactSection = {
     buttonLabel: 'Generate angle',
   },
   formName: 'contact',
+  /* Netlify redirects here on success instead of showing its own page. */
+  formAction: '/thanks',
   fields: [
     { id: 'name', name: 'name', label: 'Name', type: 'text', autocomplete: 'name', half: true },
     {
@@ -659,6 +672,17 @@ export const testimonials: Testimonial[] = [
     brand: 'VigilKids',
   },
 ];
+
+/* Where the enquiry form lands after Netlify accepts it. */
+export const thanks: ThanksPage = {
+  title: 'Message received — Tech AI Center',
+  description: 'Your enquiry reached me. I reply within one business day.',
+  heading: 'Message received',
+  body: 'Thanks — I reply within one business day, usually sooner.',
+  primaryLabel: 'Back to home',
+  primaryHref: '/',
+  secondaryLabel: 'Watch the channel',
+};
 
 /** Wordmark shown at the left of the sticky nav. */
 export const wordmark = 'techaicenter';

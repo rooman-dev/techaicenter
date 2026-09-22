@@ -9,9 +9,11 @@ interface Props {
   /** Defaults to the home page title. Legal pages pass their own. */
   title?: string;
   description?: string;
+  /** Keeps a page out of search results, e.g. the post-submit thanks page. */
+  noindex?: boolean;
 }
 
-const { title = profile.title, description = profile.tagline } = Astro.props;
+const { title = profile.title, description = profile.tagline, noindex = false } = Astro.props;
 
 /* Link previews ignore relative URLs, so these are made absolute against
    `site` in astro.config.mjs. */
@@ -28,6 +30,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

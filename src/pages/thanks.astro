@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { profile, thanks } from '../data/site';
+---
+
+<BaseLayout title={thanks.title} description={thanks.description} noindex>
+  <main class="thanks">
+    <div class="card">
+      <h1 class="card__heading">{thanks.heading}</h1>
+      <p class="card__body">{thanks.body}</p>
+
+      <div class="card__actions">
+        <a class="card__primary" href={thanks.primaryHref}>{thanks.primaryLabel}</a>
+        <a
+          class="card__secondary"
+          href={profile.channelUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {thanks.secondaryLabel}
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .thanks {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60svh;
+    padding: 4rem var(--pad) 6rem;
+  }
+
+  /* Glass is allowed here for the same reason as the contact band. */
+  .card {
+    width: 100%;
+    max-width: 34rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+
+  .card__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: clamp(2.25rem, 9vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: var(--display-tracking);
+    color: var(--text-primary);
+  }
+
+  .card__body {
+    margin: 1rem auto 0;
+    max-width: 26rem;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-body);
+  }
+
+  .card__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .card__primary,
+  .card__secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: 999px;
+    padding: 0.625rem 1.5rem;
+    font-size: 15px;
+    font-weight: var(--body-weight-medium);
+    text-decoration: none;
+    transition:
+      border-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .card__primary {
+    border: 1px solid var(--hairline);
+    color: var(--text-primary);
+  }
+
+  .card__primary:hover,
+  .card__primary:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .card__secondary {
+    border: 1px solid transparent;
+    color: var(--text-muted);
+  }
+
+  .card__secondary:hover,
+  .card__secondary:focus-visible {
+    color: var(--text-primary);
+  }
+
+  @media (min-width: 48rem) {
+    .card {
+      padding: 3rem 2.5rem;
+    }
+
+    .card__actions {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card__primary,
+    .card__secondary {
+      transition: none;
+    }
+  }
+</style>

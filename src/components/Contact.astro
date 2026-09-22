@@ -82,6 +82,7 @@ const rest = contact.fields.filter((field) => !field.half);
           class="form"
           name={contact.formName}
           method="POST"
+          action={contact.formAction}
           data-netlify="true"
           data-netlify-honeypot="bot-field"
         >
