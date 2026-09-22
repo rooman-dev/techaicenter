@@ -271,6 +271,12 @@ const tw = (text: string, seconds = 0.9) =>
       font-size: 74px;
     }
 
+    /* Starts at the heading indent, not the container edge: the 130px label
+       column is the same offset Work's cards use. */
+    .format__panel {
+      margin-left: 130px;
+    }
+
     .format__grid {
       grid-template-columns: repeat(2, 1fr);
     }
