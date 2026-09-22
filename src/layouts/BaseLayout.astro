@@ -62,38 +62,54 @@ const ogImage = new URL('/og.png', Astro.site);
     <Footer />
     <AiLauncher />
     <script>
-      // One observer for every typewriter heading on the page. Each fires once
-      // and is then unobserved; will-change is dropped when the run ends.
+      // One observer for every typewriter heading. The headings are visible
+      // until this runs: only after tw-ready is set can anything be hidden,
+      // so a blocked or failed script cannot swallow a heading. Each element
+      // fires once, is unobserved, and a 2.5s timeout reveals any stragglers.
       (() => {
-        document.documentElement.classList.remove('no-js');
+        const root = document.documentElement;
+        root.classList.remove('no-js');
 
-        const targets = document.querySelectorAll<HTMLElement>('.tw');
+        const targets = Array.from(document.querySelectorAll<HTMLElement>('.tw'));
         if (targets.length === 0) return;
 
-        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        if (reduced || !('IntersectionObserver' in window)) {
-          targets.forEach((el) => el.classList.add('is-typed', 'is-done'));
-          return;
-        }
-
-        const start = (el: HTMLElement) => {
+        const reveal = (el: HTMLElement) => {
+          if (el.classList.contains('is-typed')) return;
           el.classList.add('is-typed');
           el.addEventListener('animationend', () => el.classList.add('is-done'), { once: true });
         };
+
+        const revealAll = () => targets.forEach(reveal);
+
+        if (
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+          !('IntersectionObserver' in window)
+        ) {
+          revealAll();
+          return;
+        }
+
+        // Only now may CSS hide anything.
+        root.classList.add('tw-ready');
 
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
               if (!entry.isIntersecting) return;
-              start(entry.target as HTMLElement);
+              reveal(entry.target as HTMLElement);
               observer.unobserve(entry.target);
             });
           },
-          { rootMargin: '0px 0px -12% 0px', threshold: 0.2 }
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.2 }
         );
 
         targets.forEach((el) => observer.observe(el));
+
+        // Safety net: nothing stays hidden for longer than this.
+        window.setTimeout(() => {
+          revealAll();
+          observer.disconnect();
+        }, 2500);
       })();
     </script>
   </body>

@@ -1,3 +1,6 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
 /* Self-hosted, latin subset, woff2 only. Archivo ships as one variable file
    covering 400-600, so the three weights are a single download. */
 @font-face {
@@ -15,9 +18,6 @@
   font-style: normal;
   font-display: swap;
 }
-
-@import 'tailwindcss';
-@import './tokens.css';
 
 @theme {
   --color-bg-base: var(--bg-base);
@@ -89,19 +89,22 @@ body {
   }
 }
 
-/* Typewriter shared by the section headings. The text is always in the HTML;
-   only its clip is animated, so it reads fine with JS off or under
-   prefers-reduced-motion. Each heading supplies its own step count inline. */
+/* Typewriter shared by the section headings. The text is always in the HTML
+   and visible by default — it is hidden ONLY once the script has marked the
+   document ready, so a failed, blocked or slow script can never leave a
+   heading invisible. Each heading supplies its own step count inline. */
 .tw {
   display: inline-block;
+}
+
+html.tw-ready .tw:not(.is-typed) {
   clip-path: inset(0 100% 0 0);
-  animation-name: tw-reveal;
-  animation-fill-mode: both;
-  animation-play-state: paused;
 }
 
 .tw.is-typed {
-  animation-play-state: running;
+  animation-name: tw-reveal;
+  /* forwards, and nothing resets it: the revealed state holds. */
+  animation-fill-mode: forwards;
   will-change: clip-path;
 }
 
@@ -119,47 +122,47 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tw {
+  html.tw-ready .tw:not(.is-typed) {
     clip-path: none;
+  }
+
+  .tw.is-typed {
     animation: none;
   }
 }
 
-/* No JS: nothing would ever add .is-typed, so show the text. */
-.no-js .tw {
-  clip-path: none;
-  animation: none;
-}
 
 /* Outline hover on display headings. Pointer devices only: on touch there is
    no hover to leave and the heading would stay hollow after a tap.
-   Only colour and stroke-colour transition, so nothing reflows — and because
-   the stroke is paint, not layout, it sits inside the typewriter's clip-path
-   rather than fighting it. */
+
+   Selectors are element-qualified (h1.oh, not .oh) on purpose. Astro compiles
+   a component rule like .work__heading into .work__heading[data-astro-cid-x],
+   which scores the same as a bare .oh:hover and loads later — so the heading's
+   own colour won the tie and the hover did nothing. Adding the element name
+   breaks the tie in our favour.
+
+   Children need no rule: .tw sets no colour of its own, so it inherits the
+   transparent fill, while a .hl run keeps the colour its component sets and
+   only has its stroke suppressed. Colour and stroke-colour are the only
+   properties touched, so nothing reflows and the clip-path is unaffected. */
 @media (hover: hover) {
-  .oh {
+  h1.oh,
+  h2.oh {
     -webkit-text-stroke: 1.5px transparent;
     transition:
       color 0.35s ease,
       -webkit-text-stroke-color 0.35s ease;
   }
 
-  .oh:hover {
+  h1.oh:hover,
+  h2.oh:hover {
     color: transparent;
     -webkit-text-stroke-color: var(--text-primary);
   }
 
-  /* Coloured runs stay solid: they keep their own fill and take no stroke. */
-  .oh .hl {
+  h1.oh .hl,
+  h2.oh .hl {
     -webkit-text-stroke-color: transparent;
-    transition:
-      color 0.35s ease,
-      -webkit-text-stroke-color 0.35s ease;
-  }
-
-  /* No colour rule here on purpose: each run keeps the colour its own
-     component sets, and only the stroke is suppressed. */
-  .oh:hover .hl {
-    -webkit-text-stroke-color: transparent;
+    transition: -webkit-text-stroke-color 0.35s ease;
   }
 }
