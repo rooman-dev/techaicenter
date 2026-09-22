@@ -22,8 +22,21 @@ console.log('hero h1:', JSON.stringify(heroState));
 if (!heroState.visible) fail.push('hero h1 not visible');
 
 for (const id of HEADINGS) {
-  await page.locator(`${id} h2.oh`).scrollIntoViewIfNeeded();
-  await page.waitForTimeout(1500);
+  // The page sets scroll-behavior: smooth, so a fixed wait races the scroll.
+  // Jump instantly, then wait for the reveal to actually finish.
+  await page.evaluate((sel) => {
+    document.querySelector(sel)?.scrollIntoView({ behavior: 'instant', block: 'center' });
+  }, `${id} h2.oh`);
+  await page
+    .waitForFunction(
+      (sel) => {
+        const tw = document.querySelector(`${sel} .tw`);
+        return !tw || getComputedStyle(tw).clipPath === 'inset(0px 0% 0px 0px)';
+      },
+      `${id} h2.oh`,
+      { timeout: 5000 }
+    )
+    .catch(() => {});
 
   const state = await page.$eval(`${id} h2.oh`, (h2) => {
     const tw = h2.querySelector('.tw');

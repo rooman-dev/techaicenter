@@ -112,10 +112,13 @@ import VideoFrame from './VideoFrame.astro';
   /* Typewriter. The TEXT is clipped — nothing opaque slides over it, so the
      background gradient behind the headline is never covered.
      Step counts are the character counts of the two lines: 24 and 28. */
+  /* nowrap keeps the stepped reveal on one line, but a phone is narrower
+     than the line: below the desktop breakpoint it wraps instead of
+     pushing the page sideways. */
   .type {
     position: relative;
     display: inline-block;
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .type__text {
@@ -290,8 +293,13 @@ import VideoFrame from './VideoFrame.astro';
       padding: 6rem 1.25rem 4rem;
     }
 
+    /* The second line is one nowrap run ~10.6x the font size wide, so a flat
+       118px overflowed the viewport below ~1500px and put a scrollbar on the
+       page. Clamping to 8.1vw keeps the full 118px on wide screens and scales
+       it down just enough to fit everywhere else — no clipping, no hidden
+       overflow, the whole line stays readable. */
     .hero__headline {
-      font-size: 118px;
+      font-size: clamp(54px, 8.1vw, 118px);
     }
 
     .hero__body {
@@ -301,15 +309,24 @@ import VideoFrame from './VideoFrame.astro';
       gap: 3rem;
     }
 
-    .hero__left {
-      flex: 0 0 600px;
-      width: 600px;
+    .type {
+      white-space: nowrap;
     }
 
+    .hero__left {
+      flex: 1 1 600px;
+      min-width: 0;
+    }
+
+    /* Shrinks with the row rather than forcing it wider than the page.
+       overflow: clip keeps the frame's soft glow, which bleeds 12% past the
+       stack, from extending the scrollable area. */
     .hero__media {
       display: block;
-      flex: 0 0 540px;
-      width: 540px;
+      flex: 0 1 540px;
+      width: auto;
+      min-width: 0;
+      overflow: clip;
     }
 
     .hero__stats {
