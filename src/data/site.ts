@@ -634,7 +634,7 @@ export const aiLauncher: AiLauncher = {
 };
 
 /** Held back until the quotes are cleared for publication. */
-export const showTestimonials = false;
+export const showTestimonials = true;
 
 export const testimonials: Testimonial[] = [
   {
