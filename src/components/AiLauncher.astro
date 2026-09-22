@@ -6,12 +6,11 @@ import { aiLauncher } from '../data/site';
 
 {/*
   TODO before launch: this is deliberately a jump link to the contact form,
-  because the assistant has no backend yet — never ship a control that does
-  nothing. Once the serverless function exists it becomes a button opening
-  the chat panel, and aiLauncher.subtitle changes to
-  'AI assistant · replies instantly'.
+  which it prefills with a draft brief — no backend, nothing faked. Once the
+  serverless function exists it becomes a button opening the chat panel, and
+  aiLauncher.subtitle changes to 'AI assistant · replies instantly'.
 */}
-<a class="launcher" href={aiLauncher.href}>
+<a class="launcher" href={aiLauncher.href} data-launcher data-draft={aiLauncher.draft}>
   <span class="launcher__mark">
     <span class="launcher__ring" aria-hidden="true"></span>
     <Image class="launcher__logo" src={logo} alt={aiLauncher.logoAlt} height={30} />
@@ -132,3 +131,53 @@ import { aiLauncher } from '../data/site';
     }
   }
 </style>
+
+<script>
+  // Jumps to the enquiry form and prefills the message with a draft brief.
+  // No backend: this only fills a field the visitor can edit or clear.
+  (() => {
+    const KEY = 'tac:draft';
+
+    const prefill = (draft: string) => {
+      const field = document.querySelector<HTMLTextAreaElement>('#brief');
+      if (!field || field.value.trim() !== '') return false;
+      field.value = draft;
+      return true;
+    };
+
+    const launcher = document.querySelector<HTMLAnchorElement>('[data-launcher]');
+
+    if (launcher) {
+      launcher.addEventListener('click', (event) => {
+        const draft = launcher.dataset.draft ?? '';
+        const contact = document.querySelector('#contact');
+
+        if (contact) {
+          // Already on the page holding the form.
+          event.preventDefault();
+          prefill(draft);
+          contact.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+
+        // On a legal page: hand the draft to the home page we are about to load.
+        try {
+          sessionStorage.setItem(KEY, draft);
+        } catch {
+          /* private mode — the jump still works, just without the draft */
+        }
+      });
+    }
+
+    // Landing after that jump.
+    try {
+      const pending = sessionStorage.getItem(KEY);
+      if (pending) {
+        sessionStorage.removeItem(KEY);
+        prefill(pending);
+      }
+    } catch {
+      /* storage unavailable; nothing to restore */
+    }
+  })();
+</script>

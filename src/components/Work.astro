@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { work, testimonials } from '../data/site';
+import { work, testimonials, showTestimonials } from '../data/site';
 import { isFilled } from '../data/utils';
 
 const { feature } = work;
@@ -84,18 +84,22 @@ const { feature } = work;
     </div>
   </div>
 
-  <ul class="voices">
-    {
-      testimonials.map((testimonial) => (
-        <li class="voice">
-          <blockquote class="voice__quote">{testimonial.quote}</blockquote>
-          <p class="voice__by">
-            {testimonial.name} · {testimonial.brand}
-          </p>
-        </li>
-      ))
-    }
-  </ul>
+  {
+    showTestimonials && (
+      <ul class="voices">
+        {
+          testimonials.map((testimonial) => (
+            <li class="voice">
+              <blockquote class="voice__quote">{testimonial.quote}</blockquote>
+              <p class="voice__by">
+                {testimonial.name} · {testimonial.brand}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    )
+  }
 </section>
 
 <style>

@@ -218,6 +218,8 @@ export interface AiLauncher {
   subtitle: string;
   href: string;
   logoAlt: string;
+  /** Prefilled into the enquiry message field. A starting point, not a form. */
+  draft: string;
 }
 
 export interface ContactSection {
@@ -559,7 +561,7 @@ export const business: Business = {
   name: 'Abid Ali',
   city: 'Islamabad',
   country: 'Pakistan',
-  email: 'abidalishakir@yahoo.com',
+  email: 'techaicenter@gmail.com',
   phone: '+92 333 6089123',
   whatsapp: '+92 333 6089123',
 };
@@ -596,7 +598,7 @@ export const contact: ContactSection = {
     placeholder: 'https://',
     buttonLabel: 'Generate angle',
   },
-  formName: 'enquiry',
+  formName: 'contact',
   fields: [
     { id: 'name', name: 'name', label: 'Name', type: 'text', autocomplete: 'name', half: true },
     {
@@ -623,7 +625,16 @@ export const aiLauncher: AiLauncher = {
   // bare '#contact' would point at nothing.
   href: '/#contact',
   logoAlt: '',
+  draft: [
+    'Product: ',
+    'What it does: ',
+    'Timing / target publish date: ',
+    'What you want viewers to do after watching: ',
+  ].join('\n'),
 };
+
+/** Held back until the quotes are cleared for publication. */
+export const showTestimonials = false;
 
 export const testimonials: Testimonial[] = [
   {
