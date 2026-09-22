@@ -53,6 +53,7 @@ import { nav, navCta, wordmark } from '../data/site';
 <style>
   .site-nav {
     position: sticky;
+    z-index: 60;
     top: 0;
     z-index: 50;
     background: var(--glass-bg);
@@ -179,6 +180,12 @@ import { nav, navCta, wordmark } from '../data/site';
     display: none;
   }
 
+  /* Only one Enquire on screen: the header pill hides while the sheet is
+     open, where the full-width CTA takes over. */
+  .site-nav[data-open='true'] .site-nav__cta {
+    display: none;
+  }
+
   /* Hamburger: two 22px hairlines inside a 44px hit area. */
   .burger {
     display: flex;
@@ -214,16 +221,21 @@ import { nav, navCta, wordmark } from '../data/site';
     transform: translateY(-3.5px) rotate(-45deg);
   }
 
+  /* Full-screen sheet below the header. Solid, not glass: page text must not
+     read through it. */
   .panel {
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: var(--nav-h, 60px);
     right: 0;
+    bottom: 0;
     left: 0;
-    border-bottom: 1px solid var(--glass-border);
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    padding: 0.5rem var(--pad) 1.5rem;
+    z-index: 60;
+    height: calc(100svh - var(--nav-h, 60px));
+    overflow-y: auto;
+    /* Fully opaque, not 0.98: at 98% the 118px hero type still read through
+       the sheet. --bg-base is the same colour, at full alpha. */
+    background: var(--bg-base);
+    padding: 0.5rem var(--pad) 2rem;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
@@ -245,10 +257,11 @@ import { nav, navCta, wordmark } from '../data/site';
   }
 
   .panel__link {
-    display: block;
-    min-height: 44px;
+    display: flex;
+    align-items: center;
+    min-height: 56px;
     border-bottom: 1px solid var(--hairline);
-    padding: 1.125rem 0;
+    padding: 0;
     font-size: 20px;
     color: var(--text-secondary);
     text-decoration: none;
@@ -260,8 +273,10 @@ import { nav, navCta, wordmark } from '../data/site';
   }
 
   .panel__cta {
-    display: block;
-    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
     margin-top: 1.5rem;
     border: 1px solid var(--glass-border);
     border-radius: 999px;
@@ -328,28 +343,34 @@ import { nav, navCta, wordmark } from '../data/site';
 
     if (!nav || !toggle || !panel) return;
 
-    const desktop = window.matchMedia('(min-width: 48rem)');
+    const desktop = window.matchMedia('(min-width: 64rem)');
+    const root = document.documentElement;
     let previousOverflow = '';
 
     const setOpen = (open: boolean) => {
       if (open === (nav.dataset.open === 'true')) return;
+
+      // The sheet starts under the header, whatever height that is.
+      nav.style.setProperty('--nav-h', `${Math.round(nav.getBoundingClientRect().height)}px`);
 
       nav.dataset.open = String(open);
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
 
       if (open) {
-        previousOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
+        previousOverflow = root.style.overflow;
+        root.style.overflow = 'hidden';
       } else {
-        document.body.style.overflow = previousOverflow;
+        root.style.overflow = previousOverflow;
       }
     };
 
     toggle.addEventListener('click', () => setOpen(nav.dataset.open !== 'true'));
 
+    // A link closes it; so does the empty space around the links.
     panel.addEventListener('click', (event) => {
-      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+      const target = event.target as HTMLElement;
+      if (target.closest('a') || target === panel) setOpen(false);
     });
 
     document.addEventListener('keydown', (event) => {

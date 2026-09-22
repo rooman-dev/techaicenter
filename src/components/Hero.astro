@@ -155,10 +155,13 @@ import VideoFrame from './VideoFrame.astro';
     animation: type-reveal 1.7s steps(28, end) 2s both;
   }
 
+  /* Fades out once the line has finished typing: a caret parked after
+     "them." forever reads as a rendering bug, not an effect. */
   .type--two .type__caret {
     animation:
       caret-travel 1.7s steps(28, end) 2s both,
-      caret-blink 0.9s step-end 3.7s infinite;
+      caret-blink 0.9s step-end 3.7s 2,
+      caret-out 0.35s ease 5.5s forwards;
   }
 
   @keyframes type-reveal {
