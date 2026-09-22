@@ -67,7 +67,7 @@ const tw = (text: string, seconds = 0.9) =>
     margin: 0 auto;
     width: 100%;
     max-width: 68rem;
-    padding: 4rem var(--pad);
+    padding: calc(var(--section-gap) / 2) var(--pad);
   }
 
   .format__header {
@@ -250,7 +250,7 @@ const tw = (text: string, seconds = 0.9) =>
 
   @media (min-width: 64rem) {
     .format {
-      padding: 6rem var(--pad);
+      padding: calc(var(--section-gap) / 2) var(--pad);
     }
 
     .format__header {

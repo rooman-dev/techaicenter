@@ -42,15 +42,14 @@ const featuredEntry = [work.feature, ...work.entries].find(
         <span class="frame__triangle"></span>
       </span>
 
-      <div class="frame__meta">
-        <span class="frame__progress"><span class="frame__progress-fill"></span></span>
-        <p class="frame__title">{featuredVideo.title}</p>
-        {isFilled(featuredVideo.views) && <p class="frame__views">{featuredVideo.views}</p>}
-      </div>
+      <span class="frame__progress"><span class="frame__progress-fill"></span></span>
     </div>
   </div>
 
-  <p class="frame__caption">Latest campaign</p>
+  <div class="frame__caption">
+    <p class="frame__title">{featuredVideo.title}</p>
+    {isFilled(featuredVideo.views) && <p class="frame__views">{featuredVideo.views}</p>}
+  </div>
 </a>
 
 <style>
@@ -130,14 +129,14 @@ const featuredEntry = [work.feature, ...work.entries].find(
     object-fit: cover;
   }
 
+  /* Solid pill, bottom-right, clear of the play button. */
   .frame__chip {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    border: 1px solid var(--glass-border);
-    border-radius: 6px;
-    background: var(--glass-bg);
-    padding: 3px 8px;
+    right: 12px;
+    bottom: 16px;
+    border-radius: 999px;
+    background: var(--bg-base);
+    padding: 4px 10px;
     font-size: 11px;
     letter-spacing: 0.4px;
     color: var(--text-secondary);
@@ -151,11 +150,11 @@ const featuredEntry = [work.feature, ...work.entries].find(
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 76px;
-    height: 76px;
-    border: 1px solid var(--cyan);
+    width: 48px;
+    height: 48px;
+    border: 1px solid color-mix(in srgb, var(--text-primary) 45%, transparent);
     border-radius: 50%;
-    background: var(--glass-bg);
+    background: color-mix(in srgb, var(--bg-base) 55%, transparent);
     transition: background var(--dur) var(--ease);
   }
 
@@ -163,7 +162,7 @@ const featuredEntry = [work.feature, ...work.entries].find(
   .frame__ring {
     position: absolute;
     inset: -1px;
-    border: 1px solid var(--cyan);
+    border: 1px solid color-mix(in srgb, var(--text-primary) 35%, transparent);
     border-radius: 50%;
     animation: frame-pulse 2.8s var(--ease) infinite;
     pointer-events: none;
@@ -188,27 +187,22 @@ const featuredEntry = [work.feature, ...work.entries].find(
   .frame__triangle {
     width: 0;
     height: 0;
-    margin-left: 5px;
-    border-top: 11px solid transparent;
-    border-bottom: 11px solid transparent;
-    border-left: 18px solid var(--cyan);
+    margin-left: 3px;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 11px solid var(--text-primary);
     transition: border-left-color var(--dur) var(--ease);
   }
 
-  .frame__meta {
+  /* Scrubber pinned to the bottom edge of the image. */
+  .frame__progress {
     position: absolute;
     right: 0;
     bottom: 0;
     left: 0;
-    padding: 0 18px 16px;
-  }
-
-  .frame__progress {
     display: block;
-    width: 100%;
     height: 2px;
     background: var(--hairline);
-    margin-bottom: 12px;
   }
 
   .frame__progress-fill {
@@ -218,25 +212,22 @@ const featuredEntry = [work.feature, ...work.entries].find(
     background: linear-gradient(90deg, var(--cyan), var(--accent));
   }
 
+  /* Caption below the image, never over it. */
+  .frame__caption {
+    margin-top: 14px;
+  }
+
   .frame__title {
     margin: 0;
     font-size: 14px;
     font-weight: var(--body-weight-medium);
+    line-height: 1.45;
     color: var(--text-primary);
   }
 
   .frame__views {
-    margin: 2px 0 0;
+    margin: 4px 0 0;
     font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .frame__caption {
-    margin: 18px 0 0;
-    text-align: center;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.6px;
     color: var(--text-muted);
   }
 
@@ -259,7 +250,7 @@ const featuredEntry = [work.feature, ...work.entries].find(
 
   .frame:hover .frame__play,
   .frame:focus-visible .frame__play {
-    background: var(--cyan);
+    background: var(--text-primary);
   }
 
   .frame:hover .frame__triangle,

@@ -67,7 +67,7 @@ import VideoFrame from './VideoFrame.astro';
     margin: 0 auto;
     width: 100%;
     max-width: 68rem;
-    padding: 4rem var(--pad) 3rem;
+    padding: calc(var(--section-gap) / 2) var(--pad);
   }
 
   .hero__eyebrow {
@@ -299,7 +299,7 @@ import VideoFrame from './VideoFrame.astro';
 
   @media (min-width: 64rem) {
     .hero {
-      padding: 6rem var(--pad) 4rem;
+      padding: calc(var(--section-gap) / 2) var(--pad);
     }
 
     .hero__headline {

@@ -156,8 +156,7 @@ const rest = contact.fields.filter((field) => !field.half);
     flex-direction: column;
     gap: 1rem;
     max-width: 68rem;
-    /* Extra bottom room so the fixed launcher never sits on the submit. */
-    padding: 4rem var(--pad) 7.5rem;
+    padding: calc(var(--section-gap) / 2) var(--pad);
   }
 
   .contact__label {
@@ -338,7 +337,7 @@ const rest = contact.fields.filter((field) => !field.half);
   }
 
   .form {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
   }
 
   .form__honeypot {
@@ -403,10 +402,11 @@ const rest = contact.fields.filter((field) => !field.half);
     line-height: 1.6;
   }
 
+  /* Sits directly under the last field, one field-gap away. */
   .form__submit {
     width: 100%;
     min-height: 48px;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     border: 1px solid var(--hairline);
     border-radius: 999px;
     background: transparent;
@@ -431,7 +431,7 @@ const rest = contact.fields.filter((field) => !field.half);
     .contact__inner {
       flex-direction: row;
       gap: 0;
-      padding: 6rem var(--pad);
+      padding: calc(var(--section-gap) / 2) var(--pad);
     }
 
     .contact__label {
@@ -443,6 +443,7 @@ const rest = contact.fields.filter((field) => !field.half);
       flex: 1;
       min-width: 0;
       flex-direction: row;
+      align-items: flex-start;
       gap: 72px;
     }
 

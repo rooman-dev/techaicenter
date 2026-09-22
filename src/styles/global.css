@@ -36,9 +36,12 @@
 }
 
 /* Page gutter: 16px phones, 24px tablets, 48px desktop. Every section reads
-   this instead of carrying its own fixed padding. */
+   this instead of carrying its own fixed padding.
+   --section-gap is the space between one section's content and the next;
+   each section contributes half of it above and half below. */
 :root {
   --pad: 16px;
+  --section-gap: clamp(80px, 10vw, 140px);
 }
 
 @media (min-width: 48rem) {
@@ -170,6 +173,14 @@ html.tw-ready .tw:not(.is-typed) {
   }
 }
 
+
+/* Display headings never leave a single word stranded on the last line. */
+h1.oh,
+h2.oh,
+.legal__heading,
+.card__heading {
+  text-wrap: balance;
+}
 
 /* Outline hover on display headings. Pointer devices only: on touch there is
    no hover to leave and the heading would stay hollow after a tap.

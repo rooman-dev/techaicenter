@@ -3,7 +3,6 @@ import '../styles/global.css';
 import { profile } from '../data/site';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import AiLauncher from '../components/AiLauncher.astro';
 
 interface Props {
   /** Defaults to the home page title. Legal pages pass their own. */
@@ -63,7 +62,6 @@ const ogImage = new URL('/og.png', Astro.site);
     <Nav />
     <slot />
     <Footer />
-    <AiLauncher />
     <script>
       // One observer for every typewriter heading. The headings are visible
       // until this runs: only after tw-ready is set can anything be hidden,

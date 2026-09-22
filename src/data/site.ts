@@ -211,17 +211,6 @@ export interface ContactField {
   half?: boolean;
 }
 
-export interface AiLauncher {
-  /** First line, at 13px. */
-  title: string;
-  /** Second line, at 11px muted. */
-  subtitle: string;
-  href: string;
-  logoAlt: string;
-  /** Prefilled into the enquiry message field. A starting point, not a form. */
-  draft: string;
-}
-
 export interface ThanksPage {
   title: string;
   description: string;
@@ -626,24 +615,6 @@ export const contact: ContactSection = {
     { id: 'brief', name: 'brief', label: 'Product, timing, goal', multiline: true },
   ],
   submitLabel: 'Send enquiry',
-};
-
-/* TODO before launch: once the serverless function exists this becomes a
-   chat panel rather than a jump link, and `subtitle` changes to
-   'AI assistant · replies instantly'. */
-export const aiLauncher: AiLauncher = {
-  title: 'Ask about a campaign',
-  subtitle: 'AI assistant · answers now',
-  // Root-relative: the launcher also renders on /terms and /privacy, where a
-  // bare '#contact' would point at nothing.
-  href: '/#contact',
-  logoAlt: '',
-  draft: [
-    'Product: ',
-    'What it does: ',
-    'Timing / target publish date: ',
-    'What you want viewers to do after watching: ',
-  ].join('\n'),
 };
 
 /** Held back until the quotes are cleared for publication. */

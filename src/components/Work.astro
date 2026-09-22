@@ -11,17 +11,18 @@ const tw = (text: string, seconds = 0.9) =>
 ---
 
 <section id="work" class="work">
-  <div class="work__header">
-    <div class="work__header-main">
-      <p class="work__label">{work.label}</p>
-      <h2 class="work__heading oh">
-        <span class="tw" style={tw(work.heading)}>{work.heading}</span>
-      </h2>
-    </div>
-    <p class="work__note">{work.note}</p>
-  </div>
+  <div class="work__inner">
+    <p class="work__label">{work.label}</p>
 
-  <div class="work__cards">
+    <div class="work__content">
+      <div class="work__header">
+        <h2 class="work__heading oh">
+          <span class="tw" style={tw(work.heading)}>{work.heading}</span>
+        </h2>
+        <p class="work__note">{work.note}</p>
+      </div>
+
+      <div class="work__cards">
     <a
       class="feature"
       href={feature.url}
@@ -85,45 +86,50 @@ const tw = (text: string, seconds = 0.9) =>
               <p class="cell__cta">{work.entryCta}</p>
             </div>
           </a>
-        ))
+          ))
+        }
+        </div>
+      </div>
+
+      {
+        showTestimonials && (
+          <ul class="voices">
+            {testimonials.map((testimonial) => (
+              <li class="voice">
+                <blockquote class="voice__quote">{testimonial.quote}</blockquote>
+                <p class="voice__by">
+                  {testimonial.name} · {testimonial.brand}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )
       }
     </div>
   </div>
-
-  {
-    showTestimonials && (
-      <ul class="voices">
-        {
-          testimonials.map((testimonial) => (
-            <li class="voice">
-              <blockquote class="voice__quote">{testimonial.quote}</blockquote>
-              <p class="voice__by">
-                {testimonial.name} · {testimonial.brand}
-              </p>
-            </li>
-          ))
-        }
-      </ul>
-    )
-  }
 </section>
 
 <style>
-  /* Full-bleed: the section has vertical padding only. Each block below
-     supplies its own gutter - 72px for prose, 44px for the cards. */
+  /* Same container and header shape as every other section: the 0X label
+     sits in its own left column and the heading starts at the shared indent. */
   .work {
-    --gutter-wide: 20px;
-    --gutter-card: 20px;
-
     width: 100%;
-    padding: 4rem 0;
+    padding: calc(var(--section-gap) / 2) 0;
+  }
+
+  .work__inner {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 68rem;
+    padding: 0 var(--pad);
   }
 
   .work__header {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 0 var(--gutter-wide);
   }
 
   .work__label {
@@ -152,7 +158,6 @@ const tw = (text: string, seconds = 0.9) =>
   }
 
   .work__cards {
-    padding: 0 var(--gutter-card);
     margin-top: 2.5rem;
   }
 
@@ -382,8 +387,8 @@ const tw = (text: string, seconds = 0.9) =>
     display: grid;
     grid-template-columns: 1fr;
     gap: 18px;
-    margin: 92px 0 0;
-    padding: 0 var(--gutter-card);
+    margin: 3rem 0 0;
+    padding: 0;
     list-style: none;
   }
 
@@ -412,11 +417,20 @@ const tw = (text: string, seconds = 0.9) =>
   }
 
   @media (min-width: 64rem) {
-    .work {
-      --gutter-wide: 72px;
-      --gutter-card: 44px;
+    .work__inner {
+      flex-direction: row;
+      gap: 0;
+    }
 
-      padding: 6rem 0;
+    .work__label {
+      width: 130px;
+      flex: none;
+      padding-top: 1rem;
+    }
+
+    .work__content {
+      flex: 1;
+      min-width: 0;
     }
 
     .work__header {
