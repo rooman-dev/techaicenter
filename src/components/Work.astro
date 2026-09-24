@@ -1,9 +1,8 @@
 ---
+import { twStyle } from '../data/utils';
 import { Image } from 'astro:assets';
 import { work, testimonials, showTestimonials } from '../data/site';
 
-const tw = (text: string, seconds = 0.9) =>
-  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
 
 ---
 
@@ -14,7 +13,7 @@ const tw = (text: string, seconds = 0.9) =>
     <div class="work__content">
       <div class="work__header">
         <h2 class="work__heading">
-          <span class="tw" style={tw(work.heading)}>{work.heading}</span>
+          <span class="tw" style={twStyle(work.heading)}>{work.heading}</span>
         </h2>
         <p class="work__note">{work.note}</p>
       </div>

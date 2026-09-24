@@ -1,8 +1,7 @@
 ---
+import { twStyle } from '../data/utils';
 import { process } from '../data/site';
 
-const tw = (text: string, seconds = 0.9) =>
-  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
 ---
 
 <section id="process" class="process">
@@ -11,7 +10,7 @@ const tw = (text: string, seconds = 0.9) =>
 
     <div class="process__content">
       <h2 class="process__heading">
-        <span class="tw" style={tw(process.heading)}>{process.heading}</span>
+        <span class="tw" style={twStyle(process.heading)}>{process.heading}</span>
       </h2>
       <p class="process__intro">{process.intro}</p>
 

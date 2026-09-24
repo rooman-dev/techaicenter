@@ -1,8 +1,7 @@
 ---
+import { twStyle } from '../data/utils';
 import { format } from '../data/site';
 
-const tw = (text: string, seconds = 0.9) =>
-  `animation-duration:${seconds}s; animation-timing-function: steps(${Math.max(text.length, 1)}, end);`;
 ---
 
 <section id="format" class="format">
@@ -10,7 +9,7 @@ const tw = (text: string, seconds = 0.9) =>
     <p class="format__label">{format.label}</p>
     <div class="format__headline">
       <h2 class="format__heading">
-        <span class="tw" style={tw(`${format.headingLead} ${format.headingTail}`, 1.1)}>
+        <span class="tw" style={twStyle(`${format.headingLead} ${format.headingTail}`)}>
           {format.headingLead}{' '}
           <span class="format__heading-tail hl">{format.headingTail}</span>
         </span>

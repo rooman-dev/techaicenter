@@ -63,16 +63,20 @@ const ogImage = new URL('/og.png', Astro.site);
     <slot />
     <Footer />
     <script>
-      // One observer for every typewriter heading. The headings are visible
-      // until this runs: only after tw-ready is set can anything be hidden,
-      // so a blocked or failed script cannot swallow a heading. Each element
-      // fires once, is unobserved, and a 2.5s timeout reveals any stragglers.
+      // One observer for every typewriter heading. Headings are visible until
+      // this runs, so a blocked or failed script cannot swallow one.
+      //
+      // The observed element is the HEADING, never the .tw span itself: a
+      // hidden span is clipped to `inset(0 100% 0 0)`, i.e. zero width, and a
+      // zero-area box never reports as intersecting — it could never trigger
+      // its own reveal. That deadlock is why headings only appeared once the
+      // safety timeout fired.
       (() => {
         const root = document.documentElement;
         root.classList.remove('no-js');
 
-        const targets = Array.from(document.querySelectorAll<HTMLElement>('.tw'));
-        if (targets.length === 0) return;
+        const spans = Array.from(document.querySelectorAll<HTMLElement>('.tw'));
+        if (spans.length === 0) return;
 
         const reveal = (el: HTMLElement) => {
           if (el.classList.contains('is-typed')) return;
@@ -80,15 +84,20 @@ const ogImage = new URL('/og.png', Astro.site);
           el.addEventListener('animationend', () => el.classList.add('is-done'), { once: true });
         };
 
-        const revealAll = () => targets.forEach(reveal);
+        const revealGroup = (host: Element) =>
+          host.querySelectorAll<HTMLElement>('.tw').forEach(reveal);
 
         if (
           window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
           !('IntersectionObserver' in window)
         ) {
-          revealAll();
+          spans.forEach(reveal);
           return;
         }
+
+        // Group the spans by the heading that holds them.
+        const hosts = new Set<Element>();
+        spans.forEach((span) => hosts.add(span.closest('h1, h2, h3') ?? span.parentElement ?? span));
 
         // Only now may CSS hide anything.
         root.classList.add('tw-ready');
@@ -97,20 +106,50 @@ const ogImage = new URL('/og.png', Astro.site);
           (entries) => {
             entries.forEach((entry) => {
               if (!entry.isIntersecting) return;
-              reveal(entry.target as HTMLElement);
+              revealGroup(entry.target);
               observer.unobserve(entry.target);
             });
           },
-          { rootMargin: '0px 0px -10% 0px', threshold: 0.2 }
+          { rootMargin: '0px 0px -5% 0px', threshold: 0.15 }
         );
 
-        targets.forEach((el) => observer.observe(el));
+        hosts.forEach((host) => observer.observe(host));
 
-        // Safety net: nothing stays hidden for longer than this.
-        window.setTimeout(() => {
-          revealAll();
-          observer.disconnect();
-        }, 2500);
+        // Safety net: reveal what is ON SCREEN but still hidden — never the
+        // whole page, or everything below the fold would be shown before it
+        // was ever reached.
+        const sweep = () => {
+          hosts.forEach((host) => {
+            const box = host.getBoundingClientRect();
+            if (box.top < window.innerHeight && box.bottom > 0) {
+              revealGroup(host);
+              observer.unobserve(host);
+            }
+          });
+        };
+
+        window.addEventListener('load', sweep);
+        window.setTimeout(sweep, 2500);
+
+        // Belt and braces. The observer is the primary path, but it has been
+        // seen to stay silent for a heading it is demonstrably observing, and
+        // a heading that never reveals is worse than a cheap listener. This
+        // one is passive, runs at most once per frame, only measures hosts
+        // that are still hidden, and removes itself once they are all done.
+        let queued = false;
+        const onScroll = () => {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(() => {
+            queued = false;
+            sweep();
+            if (spans.every((el) => el.classList.contains('is-typed'))) {
+              window.removeEventListener('scroll', onScroll);
+            }
+          });
+        };
+
+        window.addEventListener('scroll', onScroll, { passive: true });
       })();
     </script>
   </body>
