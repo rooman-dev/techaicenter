@@ -21,7 +21,7 @@ const longestMessage = hero.rotations.reduce((a, r) => (r.message.length > a.len
     class="rotator"
     data-rotator
     data-rotations={JSON.stringify(hero.rotations)}
-    data-hold="4000"
+    data-hold="5000"
   >
     <h1 class="hero__headline">
       {/* Sized from the longest pair; the visible line is layered on top. */}
@@ -149,41 +149,68 @@ const longestMessage = hero.rotations.reduce((a, r) => (r.message.length > a.len
     text-wrap: balance;
   }
 
+  /* Swap: the outgoing pair fades out and lifts 12px, the incoming pair
+     fades in from 12px below. Opacity and transform only — both composite,
+     neither reflows, and nothing clips the descenders. */
+  .rotator__headline,
+  .rotator__message {
+    opacity: 1;
+    transform: none;
+  }
+
   .rotator__headline {
-    /* Typed in with a stepped clip; padding keeps descenders out of the clip. */
+    /* Keeps descenders clear of the box, as the display face needs. */
     padding-bottom: 0.08em;
-    clip-path: inset(0 100% 0 0);
   }
 
-  .rotator[data-state='typing'] .rotator__headline {
-    animation: hero-type var(--type-ms, 900ms) steps(var(--steps, 30), end) forwards;
+  .rotator[data-state='leaving'] .rotator__headline,
+  .rotator[data-state='leaving'] .rotator__message {
+    animation: hero-out 0.35s ease forwards;
   }
 
-  .rotator[data-state='holding'] .rotator__headline,
-  .rotator[data-state='idle'] .rotator__headline {
-    clip-path: inset(0 0 0 0);
+  .rotator[data-state='entering'] .rotator__headline,
+  .rotator[data-state='entering'] .rotator__message {
+    animation: hero-in 0.45s ease backwards;
   }
 
-  .rotator[data-state='leaving'] .rotator__headline {
-    animation: hero-untype 420ms steps(var(--steps, 30), end) forwards;
+  /* The message trails the headline slightly, so the pair reads as one move. */
+  .rotator[data-state='entering'] .rotator__message {
+    animation-delay: 0.08s;
   }
 
-  @keyframes hero-type {
+  @keyframes hero-out {
+    to {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+  }
+
+  @keyframes hero-in {
     from {
-      clip-path: inset(0 100% 0 0);
+      opacity: 0;
+      transform: translateY(12px);
     }
     to {
-      clip-path: inset(0 0 0 0);
+      opacity: 1;
+      transform: none;
     }
   }
 
-  @keyframes hero-untype {
-    from {
-      clip-path: inset(0 0 0 0);
-    }
-    to {
-      clip-path: inset(0 100% 0 0);
-    }
+  .hero__intro {
+    position: relative;
+  }
+
+  .hero__headline {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: clamp(2.25rem, 8.6cqi, 5.5rem);
+    /* Big Shoulders' ink runs taller than its em box; 1.12 clears the
+       descenders in Chromium as well as WebKit. */
+    line-height: 1.12;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    text-wrap: balance;
   }
 
   .hero__intro {
@@ -194,14 +221,25 @@ const longestMessage = hero.rotations.reduce((a, r) => (r.message.length > a.len
     color: var(--text-body);
   }
 
-  .rotator__message {
-    opacity: 1;
-    transition: opacity 0.45s ease;
-  }
+  /* Hero headline only — no other heading takes this. Paint-only properties,
+     so it never fights the fade: the swap animates opacity and transform. */
+  @media (hover: hover) {
+    .hero__headline {
+      -webkit-text-stroke: 1.5px transparent;
+      transition:
+        color 0.35s ease,
+        -webkit-text-stroke-color 0.35s ease;
+    }
 
-  .rotator[data-state='typing'] .rotator__message,
-  .rotator[data-state='leaving'] .rotator__message {
-    opacity: 0;
+    .hero__headline:hover {
+      color: transparent;
+      -webkit-text-stroke-color: var(--text-primary);
+    }
+
+    /* A coloured run keeps its own fill and takes no stroke. */
+    .hero__headline .hl {
+      -webkit-text-stroke-color: transparent;
+    }
   }
 
   .dots {
@@ -332,14 +370,11 @@ const longestMessage = hero.rotations.reduce((a, r) => (r.message.length > a.len
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .rotator__headline {
-      clip-path: none;
-      animation: none !important;
-    }
-
+    .rotator__headline,
     .rotator__message {
+      animation: none !important;
       opacity: 1 !important;
-      transition: none;
+      transform: none !important;
     }
   }
 </style>
@@ -375,8 +410,6 @@ const longestMessage = hero.rotations.reduce((a, r) => (r.message.length > a.len
 
     const paint = (i: number) => {
       const pair = pairs[i];
-      root.style.setProperty('--steps', String(Math.max(pair.headline.length, 1)));
-      root.style.setProperty('--type-ms', `${Math.min(1400, 320 + pair.headline.length * 26)}ms`);
       headline.textContent = pair.headline;
       message.textContent = pair.message;
       dots.forEach((dot, d) => dot.setAttribute('aria-selected', String(d === i)));
@@ -393,15 +426,16 @@ const longestMessage = hero.rotations.reduce((a, r) => (r.message.length > a.len
       }, ms);
     };
 
+    // out (0.35s) -> swap text -> in (0.45s) -> hold
     const show = (i: number) => {
-      index = (i + pairs.length) % pairs.length;
-      paint(index);
-      setState('typing');
-      schedule(1500, () => {
-        setState('holding');
-        schedule(hold, () => {
-          setState('leaving');
-          schedule(500, () => show(index + 1));
+      setState('leaving');
+      schedule(350, () => {
+        index = (i + pairs.length) % pairs.length;
+        paint(index);
+        setState('entering');
+        schedule(450, () => {
+          setState('holding');
+          schedule(hold, () => show(index + 1));
         });
       });
     };

@@ -14,9 +14,10 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.goto(BASE, { waitUntil: 'networkidle' });
 
-const heroState = await page.$eval('h1.oh', (el) => ({
+const heroState = await page.$eval('h1.hero__headline', (el) => ({
   color: getComputedStyle(el).color,
   visible: el.getBoundingClientRect().height > 0,
+  text: (el.textContent ?? '').trim().length > 0,
 }));
 console.log('hero h1:', JSON.stringify(heroState));
 if (!heroState.visible) fail.push('hero h1 not visible');
@@ -26,19 +27,19 @@ for (const id of HEADINGS) {
   // Jump instantly, then wait for the reveal to actually finish.
   await page.evaluate((sel) => {
     document.querySelector(sel)?.scrollIntoView({ behavior: 'instant', block: 'center' });
-  }, `${id} h2.oh`);
+  }, `${id} h2`);
   await page
     .waitForFunction(
       (sel) => {
         const tw = document.querySelector(`${sel} .tw`);
         return !tw || getComputedStyle(tw).clipPath === 'inset(0px 0% 0px 0px)';
       },
-      `${id} h2.oh`,
+      `${id} h2`,
       { timeout: 5000 }
     )
     .catch(() => {});
 
-  const state = await page.$eval(`${id} h2.oh`, (h2) => {
+  const state = await page.$eval(`${id} h2`, (h2) => {
     const tw = h2.querySelector('.tw');
     const cs = getComputedStyle(tw ?? h2);
     return {
@@ -59,7 +60,7 @@ for (const id of HEADINGS) {
 }
 
 // --- hover: hero h1 and one section h2 ---
-for (const sel of ['h1.oh', '#work h2.oh']) {
+for (const sel of ['h1.hero__headline']) {
   await page.locator(sel).scrollIntoViewIfNeeded();
   await page.hover(sel);
   await page.waitForTimeout(600);
@@ -76,17 +77,12 @@ for (const sel of ['h1.oh', '#work h2.oh']) {
   await page.waitForTimeout(400);
 }
 
-// coloured run stays solid while its heading is hovered
-await page.locator('#contact h2.oh').scrollIntoViewIfNeeded();
-await page.hover('#contact h2.oh');
-await page.waitForTimeout(600);
-const hl = await page.$eval('#contact h2.oh .hl', (el) => {
-  const cs = getComputedStyle(el);
-  return { color: cs.color, strokeColor: cs.webkitTextStrokeColor };
-});
-console.log('hl run while hovered:', JSON.stringify(hl));
-if (hl.color === 'rgba(0, 0, 0, 0)') fail.push('hl run went transparent');
-await page.mouse.move(0, 0);
+// no other heading may take the outline treatment
+const others = await page.$$eval('h2', (els) =>
+  els.filter((el) => getComputedStyle(el).webkitTextStrokeWidth !== '0px').length
+);
+console.log('section headings with a text stroke:', others);
+if (others > 0) fail.push(`${others} section headings carry an outline`);
 
 await page.screenshot({ path: 'scripts/shot-1440.png', fullPage: true });
 await page.close();
@@ -95,10 +91,10 @@ await page.close();
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
 await mobile.goto(BASE, { waitUntil: 'networkidle' });
 for (const id of HEADINGS) {
-  await mobile.locator(`${id} h2.oh`).scrollIntoViewIfNeeded();
+  await mobile.locator(`${id} h2`).scrollIntoViewIfNeeded();
   await mobile.waitForTimeout(700);
 }
-const mobileHidden = await mobile.$$eval('h2.oh', (els) =>
+const mobileHidden = await mobile.$$eval('h2', (els) =>
   els.filter((el) => el.getBoundingClientRect().height === 0).length
 );
 console.log('mobile headings with zero height:', mobileHidden);
